@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#3B82F6" />
+  <title>Treino Mental — Banco do Brasil</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Treino BB" />
+
+  <style>
+    /* ── Reset & Base ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #F7F8FA;
+      color: #1A1D23;
+      min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Layout ────────────────────────────────────── */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .container {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    /* ── Section Label ─────────────────────────────── */
+    .sec-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #6B7280;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+
+    .section { margin-bottom: 1.4rem; }
+
+    /* ── Cards / Buttons ───────────────────────────── */
+    .card {
+      background: #fff;
+      border: 1px solid #E8EAF0;
+      border-radius: 12px;
+      padding: 1rem;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ── Mode Buttons ──────────────────────────────── */
+    .mode-row { display: flex; gap: 8px; }
+    .mode-btn {
+      flex: 1;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid #E8EAF0;
+      background: #fff;
+      color: #1A1D23;
+      text-align: left;
+      transition: border-color .15s, background .15s;
+    }
+    .mode-btn .btn-title { font-size: 13px; font-weight: 600; }
+    .mode-btn .btn-desc  { font-size: 11px; margin-top: 2px; color: #9CA3AF; }
+    .mode-btn.active {
+      border: 1.5px solid #3B82F6;
+      background: #EFF6FF;
+      color: #3B82F6;
+    }
+    .mode-btn.active .btn-desc { color: #3B82F6; opacity: .8; }
+
+    /* ── Ops Grid ──────────────────────────────────── */
+    .ops-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 8px;
+    }
+    .op-btn {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #E8EAF0;
+      background: #fff;
+      color: #9CA3AF;
+      text-align: left;
+      transition: all .15s;
+    }
+    .op-btn .op-symbol { font-size: 17px; font-weight: 700; margin-bottom: 2px; }
+    .op-btn .op-label  { font-size: 11px; }
+    .op-btn.active { font-weight: 600; }
+    .ops-hint { font-size: 12px; color: #9CA3AF; margin-top: 6px; }
+
+    /* ── Diff / NumQ Buttons ───────────────────────── */
+    .row-3 { display: flex; gap: 8px; }
+    .diff-btn {
+      flex: 1;
+      padding: 10px 8px;
+      border-radius: 10px;
+      border: 1px solid #E8EAF0;
+      background: #fff;
+      text-align: center;
+      transition: all .15s;
+    }
+    .diff-btn .btn-title { font-size: 13px; font-weight: 600; color: #1A1D23; }
+    .diff-btn .btn-desc  { font-size: 11px; color: #9CA3AF; margin-top: 2px; }
+    .diff-btn.active {
+      border: 1.5px solid #10B981;
+      background: #ECFDF5;
+    }
+    .diff-btn.active .btn-title { color: #059669; }
+    .diff-btn.active .btn-desc  { color: #059669; }
+
+    .numq-row { display: flex; gap: 8px; }
+    .numq-btn {
+      flex: 1;
+      padding: 11px 0;
+      border-radius: 10px;
+      border: 1px solid #E8EAF0;
+      background: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      color: #1A1D23;
+      transition: all .15s;
+    }
+    .numq-btn.active {
+      border: 1.5px solid #8B5CF6;
+      background: #F5F3FF;
+      color: #8B5CF6;
+    }
+
+    /* ── Record badge ──────────────────────────────── */
+    .record-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #F59E0B;
+      background: #FFFBEB;
+      border: 1px solid #FDE68A;
+      border-radius: 8px;
+      padding: 7px 12px;
+      margin-bottom: 16px;
+    }
+
+    /* ── Start Button ──────────────────────────────── */
+    .btn-start {
+      width: 100%;
+      padding: 15px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      background: #3B82F6;
+      color: #fff;
+      box-shadow: 0 2px 14px rgba(59,130,246,.35);
+      transition: opacity .15s;
+      letter-spacing: .3px;
+    }
+    .btn-start:active { opacity: .85; }
+
+    /* ── QUIZ screen ───────────────────────────────── */
+    .quiz-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .quiz-counter { font-size: 13px; color: #9CA3AF; }
+    .quiz-counter strong { color: #1A1D23; }
+    .quiz-timer { display: flex; align-items: center; gap: 4px; }
+    .quiz-timer-val { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .quiz-timer-lbl { font-size: 11px; color: #9CA3AF; }
+
+    .progress-bg { height: 5px; background: #E8EAF0; border-radius: 3px; margin-bottom: 1.25rem; }
+    .progress-fill { height: 5px; background: #3B82F6; border-radius: 3px; transition: width .35s; }
+
+    .op-badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid;
+      margin-bottom: 1rem;
+    }
+
+    .question-card {
+      background: #fff;
+      border: 1px solid #E8EAF0;
+      border-radius: 16px;
+      padding: 2rem 1.5rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      box-shadow: 0 1px 6px rgba(0,0,0,.05);
+    }
+    .question-hint { font-size: 12px; color: #9CA3AF; margin-bottom: 14px; }
+    .question-text {
+      font-size: 46px;
+      font-weight: 600;
+      color: #1A1D23;
+      letter-spacing: -1px;
+      line-height: 1.1;
+    }
+    .question-text sup { font-size: 22px; vertical-align: super; }
+    .question-elapsed { font-size: 11px; color: #9CA3AF; margin-top: 14px; }
+
+    .answer-row { display: flex; gap: 10px; margin-bottom: 1rem; }
+    .answer-input {
+      flex: 1;
+      font-size: 20px;
+      padding: 13px 16px;
+      border-radius: 10px;
+      border: 1px solid #E8EAF0;
+      background: #fff;
+      color: #1A1D23;
+      text-align: center;
+      outline: none;
+      transition: border-color .2s, background .2s;
+      -webkit-appearance: none;
+      -moz-appearance: textfield;
+      font-family: inherit;
+    }
+    .answer-input::-webkit-inner-spin-button,
+    .answer-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .answer-input.correct { border: 2px solid #10B981; background: #ECFDF5; }
+    .answer-input.wrong   { border: 2px solid #EF4444; background: #FEF2F2; }
+
+    .btn-ok {
+      padding: 13px 24px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      background: #3B82F6;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(59,130,246,.3);
+      transition: opacity .15s;
+    }
+    .btn-ok:active { opacity: .85; }
+
+    .feedback-box {
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid;
+      display: none;
+    }
+    .feedback-box.correct { background: #ECFDF5; color: #059669; border-color: #A7F3D0; }
+    .feedback-box.wrong   { background: #FEF2F2; color: #DC2626; border-color: #FECACA; }
+    .feedback-box.show { display: block; }
+
+    /* ── RESULTS screen ────────────────────────────── */
+    .score-hero { text-align: center; margin-bottom: 1.4rem; }
+    .score-pct  { font-size: 58px; font-weight: 700; line-height: 1.1; }
+    .score-sub  { font-size: 14px; color: #6B7280; margin-top: 4px; }
+    .score-record {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 6px 14px;
+      background: #FFFBEB;
+      border: 1px solid #FDE68A;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #F59E0B;
+      font-weight: 600;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 1.25rem;
+    }
+    .metric-card {
+      background: #fff;
+      border: 1px solid #E8EAF0;
+      border-radius: 10px;
+      padding: 12px 8px;
+      text-align: center;
+    }
+    .metric-val { font-size: 20px; font-weight: 700; color: #1A1D23; }
+    .metric-lbl { font-size: 11px; color: #9CA3AF; margin-top: 3px; }
+
+    .breakdown-card {
+      background: #fff;
+      border: 1px solid #E8EAF0;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1.1rem;
+    }
+    .breakdown-title { font-size: 11px; font-weight: 700; color: #9CA3AF; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 10px; }
+    .breakdown-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .breakdown-row:last-child { margin-bottom: 0; }
+    .breakdown-sym {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 5px;
+      min-width: 28px;
+      text-align: center;
+      border: 1px solid;
+    }
+    .bar-bg { flex: 1; height: 6px; background: #F0F2F7; border-radius: 3px; }
+    .bar-fill { height: 6px; border-radius: 3px; transition: width .5s; }
+    .breakdown-cnt { font-size: 12px; color: #6B7280; min-width: 40px; text-align: right; }
+
+    .history-card {
+      background: #fff;
+      border: 1px solid #E8EAF0;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1.4rem;
+    }
+    .history-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-bottom: 1px solid #F0F2F7;
+    }
+    .history-row:last-child { border-bottom: none; }
+    .history-sym {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      min-width: 24px;
+      text-align: center;
+    }
+    .history-q   { flex: 1; font-size: 13px; color: #6B7280; }
+    .history-t   { font-size: 11px; color: #9CA3AF; }
+    .history-res { font-size: 13px; font-weight: 600; min-width: 54px; text-align: right; }
+    .history-res.ok  { color: #059669; }
+    .history-res.bad { color: #EF4444; }
+
+    .action-row { display: flex; gap: 10px; }
+    .btn-config {
+      flex: 1; padding: 13px; border-radius: 10px; font-size: 14px; font-weight: 600;
+      border: 1px solid #E8EAF0; background: #fff; color: #1A1D23;
+      transition: background .15s;
+    }
+    .btn-config:active { background: #F7F8FA; }
+    .btn-retry {
+      flex: 1; padding: 13px; border-radius: 10px; font-size: 14px; font-weight: 600;
+      border: none; background: #3B82F6; color: #fff;
+      box-shadow: 0 2px 10px rgba(59,130,246,.3);
+      transition: opacity .15s;
+    }
+    .btn-retry:active { opacity: .85; }
+
+    /* ── Header (setup) ────────────────────────────── */
+    .app-header { margin-bottom: 1.75rem; }
+    .app-title  { font-size: 20px; font-weight: 700; }
+    .app-sub    { font-size: 13px; color: #9CA3AF; margin-top: 2px; }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════
+     TELA 1 — SETUP
+════════════════════════════════════════════ -->
+<div id="screen-setup" class="screen active">
+  <div class="container">
+
+    <div class="app-header">
+      <div class="app-title">Treino Mental</div>
+      <div class="app-sub">Concurso Banco do Brasil</div>
+    </div>
+
+    <!-- Modo -->
+    <div class="section">
+      <div class="sec-label">Modo</div>
+      <div class="mode-row">
+        <button class="mode-btn active" id="btn-mode-general" onclick="setMode('general')">
+          <div class="btn-title">Geral</div>
+          <div class="btn-desc">Todas as operações</div>
+        </button>
+        <button class="mode-btn" id="btn-mode-custom" onclick="setMode('custom')">
+          <div class="btn-title">Múltipla escolha</div>
+          <div class="btn-desc">Escolha as operações</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Operações -->
+    <div class="section">
+      <div class="sec-label" id="ops-label">Operações incluídas</div>
+      <div class="ops-grid" id="ops-grid"></div>
+      <div class="ops-hint" id="ops-hint" style="display:none"></div>
+    </div>
+
+    <!-- Dificuldade -->
+    <div class="section">
+      <div class="sec-label">Dificuldade</div>
+      <div class="row-3" id="diff-row"></div>
+    </div>
+
+    <!-- Nº questões -->
+    <div class="section">
+      <div class="sec-label">Questões por sessão</div>
+      <div class="numq-row" id="numq-row"></div>
+    </div>
+
+    <!-- Recorde -->
+    <div id="record-badge" class="record-badge" style="display:none">
+      🏆 Recorde (100%): <strong id="record-val"></strong>
+    </div>
+
+    <button class="btn-start" onclick="startQuiz()">Iniciar treino →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     TELA 2 — QUIZ
+════════════════════════════════════════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="container">
+
+    <div class="quiz-topbar">
+      <div class="quiz-counter"><strong id="q-num">1</strong> / <span id="q-total">10</span></div>
+      <div class="quiz-timer">
+        <span class="quiz-timer-val" id="timer-total">0:00</span>
+        <span class="quiz-timer-lbl">total</span>
+      </div>
+    </div>
+
+    <div class="progress-bg">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+
+    <div style="margin-bottom:1rem">
+      <span class="op-badge" id="op-badge"></span>
+    </div>
+
+    <div class="question-card">
+      <div class="question-hint">Quanto é:</div>
+      <div class="question-text" id="question-text"></div>
+      <div class="question-elapsed" id="q-elapsed">0.0s nessa questão</div>
+    </div>
+
+    <div class="answer-row">
+      <input
+        type="number"
+        class="answer-input"
+        id="answer-input"
+        placeholder="sua resposta"
+        inputmode="decimal"
+        autocomplete="off"
+      />
+      <button class="btn-ok" id="btn-ok" onclick="confirmAnswer()">OK</button>
+    </div>
+
+    <div class="feedback-box" id="feedback-box"></div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     TELA 3 — RESULTS
+════════════════════════════════════════════ -->
+<div id="screen-results" class="screen">
+  <div class="container">
+
+    <div class="score-hero">
+      <div class="score-pct" id="res-pct"></div>
+      <div class="score-sub" id="res-sub"></div>
+      <div id="res-record" class="score-record" style="display:none"></div>
+    </div>
+
+    <div class="metrics-grid" id="metrics-grid"></div>
+
+    <div class="breakdown-card">
+      <div class="breakdown-title">Por operação</div>
+      <div id="breakdown-list"></div>
+    </div>
+
+    <div class="history-card" id="history-list"></div>
+
+    <div class="action-row">
+      <button class="btn-config" onclick="goSetup()">⚙ Configurar</button>
+      <button class="btn-retry" onclick="startQuiz()">↺ Tentar novamente</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  /* ════════════════════════════════════════════
+     DADOS
+  ════════════════════════════════════════════ */
+  const OPS = [
+    { id:"add",  label:"Adição",        symbol:"+",   color:"#3B82F6", bg:"#EFF6FF", border:"#BFDBFE" },
+    { id:"sub",  label:"Subtração",     symbol:"−",   color:"#EF4444", bg:"#FEF2F2", border:"#FECACA" },
+    { id:"mul",  label:"Multiplicação", symbol:"×",   color:"#10B981", bg:"#ECFDF5", border:"#A7F3D0" },
+    { id:"div",  label:"Divisão",       symbol:"÷",   color:"#F59E0B", bg:"#FFFBEB", border:"#FDE68A" },
+    { id:"pow",  label:"Potenciação",   symbol:"xⁿ",  color:"#8B5CF6", bg:"#F5F3FF", border:"#DDD6FE" },
+    { id:"sqrt", label:"Raiz",          symbol:"√",   color:"#06B6D4", bg:"#ECFEFF", border:"#A5F3FC" },
+    { id:"pct",  label:"Porcentagem",   symbol:"%",   color:"#EC4899", bg:"#FDF2F8", border:"#FBCFE8" },
+  ];
+  const DIFFS = [
+    { id:"easy",   label:"Fácil",   desc:"Até 2 dígitos" },
+    { id:"medium", label:"Médio",   desc:"2 dígitos" },
+    { id:"hard",   label:"Difícil", desc:"3 dígitos" },
+  ];
+  const NUMQS = [5, 10, 15, 20];
+
+  /* ════════════════════════════════════════════
+     ESTADO
+  ════════════════════════════════════════════ */
+  const state = {
+    mode: "general",
+    selectedOps: OPS.map(o => o.id),
+    diff: "easy",
+    numQ: 10,
+    questions: [],
+    current: 0,
+    answers: [],
+    confirming: false,
+    bestTime: null,
+    totalStart: 0,
+    qStart: 0,
+    timerTotal: null,
+    timerQ: null,
+  };
+
+  /* ════════════════════════════════════════════
+     UTILITÁRIOS
+  ════════════════════════════════════════════ */
+  function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+  function fmtTime(ms) {
+    const s = Math.floor(ms / 1000);
+    return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  }
+
+  function opMeta(id) { return OPS.find(o => o.id === id); }
+
+  function showScreen(id) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    document.getElementById("screen-" + id).classList.add("active");
+    window.scrollTo(0, 0);
+  }
+
+  function stopTimers() {
+    clearInterval(state.timerTotal);
+    clearInterval(state.timerQ);
+  }
+
+  /* ════════════════════════════════════════════
+     GERAÇÃO DE QUESTÕES
+  ════════════════════════════════════════════ */
+  function genQuestion(op, diff) {
+    const lo = diff==="easy"?2 : diff==="medium"?10 : 50;
+    const hi = diff==="easy"?20: diff==="medium"?99 : 999;
+    let txt, answer, html;
+
+    if (op === "add") {
+      const a = rand(lo,hi), b = rand(lo,hi);
+      txt = `${a} + ${b}`; answer = a + b; html = txt;
+    } else if (op === "sub") {
+      let a = rand(lo,hi), b = rand(lo,hi);
+      if (b > a) [a,b] = [b,a];
+      txt = `${a} − ${b}`; answer = a - b; html = txt;
+    } else if (op === "mul") {
+      const r = diff==="easy"?[2,12]:diff==="medium"?[2,25]:[10,99];
+      const a = rand(r[0],r[1]), b = rand(r[0],r[1]);
+      txt = `${a} × ${b}`; answer = a * b; html = txt;
+    } else if (op === "div") {
+      const r = diff==="easy"?[2,10]:diff==="medium"?[2,20]:[2,30];
+      const b = rand(r[0],r[1]), a = b * rand(r[0],r[1]);
+      txt = `${a} ÷ ${b}`; answer = a / b; html = txt;
+    } else if (op === "pow") {
+      const bases = diff==="easy"?[2,3,4,5]:diff==="medium"?[2,3,4,5,6,7]:[2,3,5,7,8,9,10,11,12];
+      const exps  = diff==="easy"?[2,3]    :diff==="medium"?[2,3,4]      :[2,3,4,5];
+      const base = bases[rand(0,bases.length-1)], exp = exps[rand(0,exps.length-1)];
+      txt = `${base}^${exp}`; answer = Math.pow(base, exp);
+      html = `${base}<sup style="font-size:.5em;vertical-align:super">${exp}</sup>`;
+    } else if (op === "sqrt") {
+      const roots = diff==="easy"?[4,9,16,25,36,49,64,81,100]:diff==="medium"?[16,25,36,49,64,81,100,121,144,169,196,225]:[100,121,144,169,196,225,256,289,324,400,484,529,625];
+      const num = roots[rand(0,roots.length-1)];
+      txt = `√${num}`; answer = Math.sqrt(num); html = txt;
+    } else if (op === "pct") {
+      const pcts = diff==="easy"?[10,20,25,50]:diff==="medium"?[5,10,15,20,25,30,50,75]:[5,10,12.5,15,17.5,20,25,33,66,75];
+      const base = rand(2, diff==="easy"?10:diff==="medium"?50:200) * (diff==="easy"?10:1);
+      const pct  = pcts[rand(0,pcts.length-1)];
+      txt = `${pct}% de ${base}`; answer = +(pct * base / 100).toFixed(4); html = txt;
+    }
+    return { txt, html, answer, op };
+  }
+
+  function generateQuestions() {
+    const ops = state.mode==="general" ? OPS.map(o=>o.id) : state.selectedOps;
+    return Array.from({ length: state.numQ }, () => {
+      const op = ops[rand(0, ops.length-1)];
+      return genQuestion(op, state.diff);
+    });
+  }
+
+  /* ════════════════════════════════════════════
+     SETUP SCREEN — build UI
+  ════════════════════════════════════════════ */
+  function buildSetupUI() {
+    // Ops grid
+    const grid = document.getElementById("ops-grid");
+    grid.innerHTML = "";
+    OPS.forEach(op => {
+      const btn = document.createElement("button");
+      btn.className = "op-btn" + (state.selectedOps.includes(op.id) ? " active" : "");
+      btn.id = "op-btn-" + op.id;
+      btn.innerHTML = `<div class="op-symbol">${op.symbol}</div><div class="op-label">${op.label}</div>`;
+      btn.style.color = state.selectedOps.includes(op.id) ? op.color : "#9CA3AF";
+      btn.style.background = state.selectedOps.includes(op.id) ? op.bg : "#fff";
+      btn.style.borderColor = state.selectedOps.includes(op.id) ? op.border : "#E8EAF0";
+      btn.onclick = () => toggleOp(op.id);
+      grid.appendChild(btn);
+    });
+
+    // Diff
+    const diffRow = document.getElementById("diff-row");
+    diffRow.innerHTML = "";
+    DIFFS.forEach(d => {
+      const btn = document.createElement("button");
+      btn.className = "diff-btn" + (state.diff===d.id ? " active" : "");
+      btn.id = "diff-btn-" + d.id;
+      btn.innerHTML = `<div class="btn-title">${d.label}</div><div class="btn-desc">${d.desc}</div>`;
+      btn.onclick = () => setDiff(d.id);
+      diffRow.appendChild(btn);
+    });
+
+    // NumQ
+    const numRow = document.getElementById("numq-row");
+    numRow.innerHTML = "";
+    NUMQS.forEach(n => {
+      const btn = document.createElement("button");
+      btn.className = "numq-btn" + (state.numQ===n ? " active" : "");
+      btn.id = "numq-btn-" + n;
+      btn.textContent = n;
+      btn.onclick = () => setNumQ(n);
+      numRow.appendChild(btn);
+    });
+
+    updateModeUI();
+    updateRecord();
+  }
+
+  function updateModeUI() {
+    document.getElementById("btn-mode-general").className = "mode-btn" + (state.mode==="general" ? " active" : "");
+    document.getElementById("btn-mode-custom").className  = "mode-btn" + (state.mode==="custom"  ? " active" : "");
+
+    const label = document.getElementById("ops-label");
+    const hint  = document.getElementById("ops-hint");
+    if (state.mode === "general") {
+      label.textContent = "Operações incluídas";
+      hint.style.display = "none";
+      OPS.forEach(op => {
+        const btn = document.getElementById("op-btn-" + op.id);
+        if (!btn) return;
+        btn.classList.add("active");
+        btn.style.color = op.color;
+        btn.style.background = op.bg;
+        btn.style.borderColor = op.border;
+        btn.style.opacity = "0.9";
+        btn.style.cursor = "default";
+      });
+    } else {
+      label.textContent = "Selecione as operações";
+      hint.style.display = "block";
+      hint.textContent = `${state.selectedOps.length} selecionada${state.selectedOps.length!==1?"s":""}`;
+      OPS.forEach(op => {
+        const btn = document.getElementById("op-btn-" + op.id);
+        if (!btn) return;
+        const active = state.selectedOps.includes(op.id);
+        btn.classList.toggle("active", active);
+        btn.style.color = active ? op.color : "#9CA3AF";
+        btn.style.background = active ? op.bg : "#fff";
+        btn.style.borderColor = active ? op.border : "#E8EAF0";
+        btn.style.opacity = "1";
+        btn.style.cursor = "pointer";
+      });
+    }
+  }
+
+  function updateRecord() {
+    const badge = document.getElementById("record-badge");
+    if (state.bestTime) {
+      badge.style.display = "inline-flex";
+      document.getElementById("record-val").textContent = fmtTime(state.bestTime);
+    } else {
+      badge.style.display = "none";
+    }
+  }
+
+  /* ════════════════════════════════════════════
+     SETUP ACTIONS
+  ════════════════════════════════════════════ */
+  function setMode(m) {
+    state.mode = m;
+    if (m === "general") state.selectedOps = OPS.map(o => o.id);
+    updateModeUI();
+  }
+
+  function toggleOp(id) {
+    if (state.mode !== "custom") return;
+    const idx = state.selectedOps.indexOf(id);
+    if (idx >= 0) {
+      if (state.selectedOps.length === 1) return; // manter pelo menos 1
+      state.selectedOps.splice(idx, 1);
+    } else {
+      state.selectedOps.push(id);
+    }
+    updateModeUI();
+  }
+
+  function setDiff(d) {
+    state.diff = d;
+    document.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
+    document.getElementById("diff-btn-" + d).classList.add("active");
+  }
+
+  function setNumQ(n) {
+    state.numQ = n;
+    document.querySelectorAll(".numq-btn").forEach(b => b.classList.remove("active"));
+    document.getElementById("numq-btn-" + n).classList.add("active");
+  }
+
+  function goSetup() {
+    updateRecord();
+    showScreen("setup");
+  }
+
+  /* ════════════════════════════════════════════
+     QUIZ
+  ════════════════════════════════════════════ */
+  function startQuiz() {
+    state.questions = generateQuestions();
+    state.current   = 0;
+    state.answers   = [];
+    state.confirming = false;
+
+    state.totalStart = Date.now();
+    state.qStart     = Date.now();
+
+    showScreen("quiz");
+    document.getElementById("q-total").textContent = state.numQ;
+    renderQuestion();
+    startTimers();
+  }
+
+  function startTimers() {
+    stopTimers();
+    state.timerTotal = setInterval(() => {
+      document.getElementById("timer-total").textContent = fmtTime(Date.now() - state.totalStart);
+    }, 500);
+    state.timerQ = setInterval(() => {
+      const s = ((Date.now() - state.qStart) / 1000).toFixed(1);
+      document.getElementById("q-elapsed").textContent = `${s}s nessa questão`;
+    }, 100);
+  }
+
+  function renderQuestion() {
+    const q = state.questions[state.current];
+    const meta = opMeta(q.op);
+
+    document.getElementById("q-num").textContent = state.current + 1;
+    document.getElementById("progress-fill").style.width = `${(state.current / state.numQ) * 100}%`;
+
+    const badge = document.getElementById("op-badge");
+    badge.textContent = `${meta.symbol} ${meta.label}`;
+    badge.style.color       = meta.color;
+    badge.style.background  = meta.bg;
+    badge.style.borderColor = meta.border;
+
+    document.getElementById("question-text").innerHTML = q.html;
+
+    const input = document.getElementById("answer-input");
+    input.value = "";
+    input.className = "answer-input";
+    input.disabled = false;
+
+    const fb = document.getElementById("feedback-box");
+    fb.className = "feedback-box";
+    fb.textContent = "";
+
+    state.qStart = Date.now();
+    state.confirming = false;
+
+    setTimeout(() => input.focus(), 80);
+  }
+
+  function confirmAnswer() {
+    if (state.confirming) return;
+    const input = document.getElementById("answer-input");
+    const val = parseFloat(input.value.replace(",", "."));
+    if (isNaN(val)) { input.focus(); return; }
+
+    state.confirming = true;
+    input.disabled = true;
+
+    const elapsed = (Date.now() - state.qStart) / 1000;
+    const q = state.questions[state.current];
+    const correct = Math.abs(val - q.answer) < 0.01;
+
+    const fmt = n => Number.isInteger(n) ? n : n.toFixed(2);
+
+    // feedback visual
+    input.classList.add(correct ? "correct" : "wrong");
+    const fb = document.getElementById("feedback-box");
+    fb.className = "feedback-box show " + (correct ? "correct" : "wrong");
+    fb.textContent = correct ? "✓ Correto!" : `✗ A resposta é ${fmt(q.answer)}`;
+
+    state.answers.push({ correct, given: val, expected: q.answer, time: elapsed, txt: q.txt, op: q.op });
+
+    setTimeout(() => {
+      state.current++;
+      if (state.current < state.numQ) {
+        renderQuestion();
+      } else {
+        endQuiz();
+      }
+    }, 1100);
+  }
+
+  document.getElementById("answer-input").addEventListener("keydown", e => {
+    if (e.key === "Enter") confirmAnswer();
+  });
+
+  /* ════════════════════════════════════════════
+     RESULTS
+  ════════════════════════════════════════════ */
+  function endQuiz() {
+    stopTimers();
+    const totalMs = Date.now() - state.totalStart;
+    const correct = state.answers.filter(a => a.correct).length;
+    const pct = Math.round((correct / state.numQ) * 100);
+    const allRight = correct === state.numQ;
+    const isRecord = allRight && (!state.bestTime || totalMs < state.bestTime);
+    if (isRecord) state.bestTime = totalMs;
+
+    showScreen("results");
+
+    // Score
+    const scoreColor = allRight ? "#059669" : pct>=70 ? "#3B82F6" : "#EF4444";
+    document.getElementById("res-pct").textContent = pct + "%";
+    document.getElementById("res-pct").style.color = scoreColor;
+    document.getElementById("res-sub").textContent = `${correct} de ${state.numQ} corretos`;
+
+    const recEl = document.getElementById("res-record");
+    if (isRecord) {
+      recEl.style.display = "inline-block";
+      recEl.textContent = `🏆 Novo recorde — ${fmtTime(totalMs)}`;
+    } else {
+      recEl.style.display = "none";
+    }
+
+    // Métricas
+    const avgSec = ((totalMs / 1000) / state.numQ).toFixed(1);
+    document.getElementById("metrics-grid").innerHTML = [
+      { label:"Tempo total",   val: fmtTime(totalMs) },
+      { label:"Média/questão", val: avgSec + "s" },
+      { label:"Acertos",       val: `${correct}/${state.numQ}` },
+    ].map(m => `
+      <div class="metric-card">
+        <div class="metric-val">${m.val}</div>
+        <div class="metric-lbl">${m.label}</div>
+      </div>
+    `).join("");
+
+    // Breakdown por operação
+    const usedOps = OPS.filter(op => state.answers.some(a => a.op===op.id));
+    document.getElementById("breakdown-list").innerHTML = usedOps.map(op => {
+      const opA = state.answers.filter(a => a.op===op.id);
+      const opC = opA.filter(a => a.correct).length;
+      const opP = Math.round((opC / opA.length) * 100);
+      return `
+        <div class="breakdown-row">
+          <span class="breakdown-sym" style="color:${op.color};background:${op.bg};border-color:${op.border}">${op.symbol}</span>
+          <div class="bar-bg"><div class="bar-fill" style="width:${opP}%;background:${op.color}"></div></div>
+          <span class="breakdown-cnt">${opC}/${opA.length}</span>
+        </div>`;
+    }).join("");
+
+    // Histórico
+    const fmt = n => Number.isInteger(n) ? n : n.toFixed(2);
+    document.getElementById("history-list").innerHTML = state.answers.map((a, i) => {
+      const m = opMeta(a.op);
+      return `
+        <div class="history-row">
+          <span class="history-sym" style="color:${m.color};background:${m.bg}">${m.symbol}</span>
+          <span class="history-q">${a.txt}</span>
+          <span class="history-t">${a.time.toFixed(1)}s</span>
+          <span class="history-res ${a.correct?"ok":"bad"}">${a.correct?"✓":"✗"} ${fmt(a.expected)}</span>
+        </div>`;
+    }).join("");
+  }
+
+  /* ════════════════════════════════════════════
+     INIT
+  ════════════════════════════════════════════ */
+  buildSetupUI();
+
+  // Registra Service Worker para funcionar offline (PWA)
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
