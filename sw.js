@@ -1,10 +1,14 @@
-const CACHE_NAME = "treino-bb-v1";
+const CACHE_NAME = "treino-bb-v2";
+
+// Usa self.location para funcionar tanto em raiz quanto em subpasta (GitHub Pages)
+const BASE = self.location.pathname.replace(/sw\.js$/, "");
+
 const ASSETS = [
-  "/",
-  "/index.html",
-  "/manifest.json",
-  "/icons/icon-192.png",
-  "/icons/icon-512.png"
+  BASE,
+  BASE + "index.html",
+  BASE + "manifest.json",
+  BASE + "icons/icon-192.png",
+  BASE + "icons/icon-512.png"
 ];
 
 // Instala e faz cache dos arquivos
