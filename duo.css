@@ -354,3 +354,33 @@
     .train-link-body { flex: 1; display: flex; flex-direction: column; gap: 2px; font-size: 15px; }
     .train-link-body span { font-size: 12px; color: #6B7280; }
     .train-link .arrow { font-size: 20px; color: #D1D5DB; }
+
+    /* ── Lei seca ──────────────────────────────────── */
+    .law-intro { font-size: 13px; color: #6B7280; line-height: 1.5; margin-bottom: 1rem; }
+    .law-block { background: #fff; border: 1px solid #E8EAF0; border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+    .law-head { display: flex; flex-direction: column; gap: 2px; }
+    .law-ref { font-size: 11px; font-weight: 800; color: #B45309; text-transform: uppercase; letter-spacing: .6px; }
+    .law-label { font-size: 16px; font-weight: 700; }
+    .law-meta { font-size: 12px; color: #9CA3AF; margin: 4px 0 10px; }
+    .law-actions { display: flex; gap: 8px; }
+    .law-actions .btn-3d { flex: 1; padding: 11px 8px; font-size: 13px; text-transform: none; }
+    .law-text { font-family: Georgia, "Times New Roman", serif; font-size: 16px; line-height: 1.6; font-weight: 400; border-left-color: #B45309; }
+    .law-cite { display: block; font-size: 11px; font-weight: 800; color: #B45309; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 4px; font-family: inherit; }
+    .blank { display: inline-block; min-width: 80px; border-bottom: 2px solid #B45309; color: transparent; }
+
+    /* ── Flashcards ────────────────────────────────── */
+    .fc-title { font-size: 13px; font-weight: 700; color: #B45309; margin-bottom: 12px; }
+    .fc-card {
+      display: block; width: 100%; min-height: 300px; text-align: left; cursor: pointer;
+      background: #fff; border: 2px solid #E8EAF0; border-bottom-width: 6px; border-radius: 20px;
+      padding: 20px 18px; margin-bottom: 14px; font-size: 16px; line-height: 1.55;
+    }
+    .fc-card .fc-cue { font-size: 19px; font-weight: 700; margin-top: 6px; }
+    .fc-back { display: none; margin-top: 16px; padding-top: 14px; border-top: 2px dashed #E5E7EB;
+      font-family: Georgia, "Times New Roman", serif; font-size: 16px; }
+    .fc-card.flipped .fc-back { display: block; }
+    .fc-card.flipped { border-color: #FDE68A; cursor: default; }
+    .fc-hint { margin-top: 18px; font-size: 12px; color: #9CA3AF; text-align: center; }
+    .fc-card.flipped .fc-hint { display: none; }
+    .fc-actions { display: flex; gap: 10px; }
+    .fc-actions .btn-3d { flex: 1; text-transform: none; }
