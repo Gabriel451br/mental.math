@@ -12,6 +12,9 @@
    - "match": ligar pares. q.pairs = [[esquerda, direita], ...]
    - "input": resposta numérica digitada. q.answer = número
    Config opcional: backHref/backLabel (link de volta), trainLink (atalho no Treino)
+
+   Lei seca (opcional): engine.LAW = { blocks: [{ id, label, ref }], generate(blockId, diff), cards(blockId) }
+   Cria a aba "📜 Lei seca" com flashcards e exercícios por bloco de artigos.
    Opcionais: q.answerText, q.describe(valor), q.explain(valor), q.context
 ════════════════════════════════════════════════════════════ */
 (function () {
@@ -31,7 +34,18 @@
     const { TOPICS, THEORY, generate } = cfg.engine;
     const diffs = DIFFS.map(d => ({ ...d, desc: (cfg.diffDesc || {})[d.id] || "" }));
     const $ = id => document.getElementById(id);
-    const topicMeta = id => TOPICS.find(t => t.id === id);
+    const LAW = cfg.engine.LAW || null;
+    // blocos de lei seca viram "tópicos" para o badge, o histórico e o desempenho por conteúdo
+    const LAW_TOPICS = LAW ? LAW.blocks.map(b => ({
+      id: "lei:" + b.id, label: b.label, icon: "📜", color: "#B45309", bg: "#FFFBEB", border: "#FDE68A", desc: b.ref,
+    })) : [];
+    const ALL_TOPICS = TOPICS.concat(LAW_TOPICS);
+    const topicMeta = id => ALL_TOPICS.find(t => t.id === id);
+    const genQ = (t, diff) => {
+      const q = t.startsWith("lei:") ? LAW.generate(t.slice(4), diff) : generate(t, diff);
+      q.topic = t;
+      return q;
+    };
 
     const state = {
       tab: "path", diff: "easy", numQ: 10, hearts: true,
@@ -121,6 +135,7 @@
     <div class="tabs">
       <button class="tab" id="tab-path" onclick="G.setTab('path')">🗺️ Trilha</button>
       <button class="tab" id="tab-train" onclick="G.setTab('train')">🎯 Treino</button>
+      ${LAW ? `<button class="tab" id="tab-law" onclick="G.setTab('law')">📜 Lei seca</button>` : ""}
     </div>
 
     <div class="tab-panel" id="panel-path">
@@ -163,6 +178,11 @@
       </div>
       <button class="btn-3d" onclick="G.startTraining()">Iniciar treino →</button>
     </div>
+
+    ${LAW ? `<div class="tab-panel" id="panel-law">
+      <div class="law-intro">Os artigos mais cobrados, no texto literal. Use os <b>flashcards</b> para memorizar e os <b>exercícios</b> (lacunas, certo/errado e dispositivos) para fixar.</div>
+      <div id="law-list"></div>
+    </div>` : ""}
   </div>
 </div>
 
@@ -194,6 +214,29 @@
         <button class="btn-3d" id="btn-main" disabled onclick="G.main()">Verificar</button>
       </div>
     </div>
+  </div>
+</div>
+
+<div id="screen-cards" class="screen">
+  <div class="container">
+    <div class="quiz-top">
+      <button class="btn-close" onclick="G.home()" aria-label="Sair">✕</button>
+      <div class="progress-bg"><div class="progress-fill" id="fc-progress" style="width:0%"></div></div>
+      <div class="hearts" id="fc-count" style="color:#6B7280"></div>
+    </div>
+    <div class="fc-title" id="fc-title"></div>
+    <div id="fc-area">
+      <button class="fc-card" id="fc-card" onclick="G.flip()">
+        <div id="fc-front"></div>
+        <div class="fc-back" id="fc-back"></div>
+        <div class="fc-hint" id="fc-hint">Tente lembrar o texto e toque para conferir</div>
+      </button>
+      <div class="fc-actions" id="fc-actions">
+        <button class="btn-3d red" onclick="G.rate(false)">😕 Não lembrei</button>
+        <button class="btn-3d green" onclick="G.rate(true)">🙂 Lembrei</button>
+      </div>
+    </div>
+    <div id="fc-done"></div>
   </div>
 </div>
 
@@ -231,7 +274,7 @@
       $("st-streak").textContent = alive ? progress.streak.count : 0;
       $("st-acc").textContent = tot[1] ? Math.round((tot[0] / tot[1]) * 100) + "%" : "—";
 
-      ["path", "train"].forEach(t => {
+      (LAW ? ["path", "train", "law"] : ["path", "train"]).forEach(t => {
         $("tab-" + t).classList.toggle("active", state.tab === t);
         $("panel-" + t).classList.toggle("active", state.tab === t);
       });
@@ -264,6 +307,21 @@
       }).join("");
       const n = state.mixTopics.length;
       $("topics-hint").textContent = `${n} conteúdo${n !== 1 ? "s" : ""} selecionado${n !== 1 ? "s" : ""}`;
+      if (LAW) {
+        progress.law = progress.law || {};
+        $("law-list").innerHTML = LAW.blocks.map(b => {
+          const n = LAW.cards(b.id).length, best = progress.law[b.id];
+          const tp = progress.topics["lei:" + b.id];
+          return `<div class="law-block">
+            <div class="law-head"><span class="law-ref">${b.ref}</span><span class="law-label">${b.label}</span></div>
+            <div class="law-meta">${n} dispositivos${best != null ? ` · 🃏 melhor: ${best}/${n} de primeira` : ""}${tp && tp.total ? ` · ✏️ ${Math.round((tp.correct / tp.total) * 100)}% de acerto` : ""}</div>
+            <div class="law-actions">
+              <button class="btn-3d ghost" onclick="G.startCards('${b.id}')">🃏 Flashcards</button>
+              <button class="btn-3d" onclick="G.startLawQuiz('${b.id}')">✏️ Exercícios</button>
+            </div>
+          </div>`;
+        }).join("");
+      }
       $("btn-hearts-on").classList.toggle("active", state.hearts);
       $("btn-hearts-off").classList.toggle("active", !state.hearts);
     }
@@ -303,7 +361,7 @@
     function buildQuestions(topics, n, diff) {
       const list = [];
       for (let i = 0; i < n; i++) list.push(topics[i % topics.length]);
-      return shuffle(list).map(t => generate(t, diff));
+      return shuffle(list).map(t => genQ(t, diff));
     }
     // Trilha: lição curta, com vidas, dificuldade pelo nível da unidade
     function startLesson(id) {
@@ -316,6 +374,66 @@
       state.last = { topics: state.mixTopics.slice(), n: state.numQ, diff: state.diff, hearts: state.hearts };
       runSession(buildQuestions(state.last.topics, state.numQ, state.diff), state.hearts);
     }
+    // Lei seca: exercícios de um bloco (sem vidas, 10 questões, dificuldade escolhida no Treino)
+    function startLawQuiz(id) {
+      state.last = { topics: ["lei:" + id], n: LESSON_Q, diff: state.diff, hearts: false };
+      runSession(buildQuestions(state.last.topics, LESSON_Q, state.diff), false);
+    }
+
+    // Lei seca: flashcards. Os que você não lembrou voltam para o fim do baralho.
+    const fc = { block: null, queue: [], total: 0, missed: new Set(), flipped: false };
+    function startCards(id) {
+      const cards = shuffle(LAW.cards(id));
+      Object.assign(fc, { block: id, queue: cards, total: cards.length, missed: new Set(), flipped: false });
+      $("fc-title").textContent = `${LAW.blocks.find(b => b.id === id).ref} · ${LAW.blocks.find(b => b.id === id).label}`;
+      $("fc-area").style.display = "";
+      $("fc-done").innerHTML = "";
+      showScreen("cards");
+      showCard();
+    }
+    function showCard() {
+      const c = fc.queue[0], done = fc.total - fc.queue.length;
+      $("fc-progress").style.width = `${(done / fc.total) * 100}%`;
+      $("fc-count").textContent = `${done}/${fc.total}`;
+      fc.flipped = false;
+      $("fc-card").classList.remove("flipped");
+      $("fc-front").innerHTML = c.front;
+      $("fc-back").innerHTML = c.back;
+      $("fc-actions").style.visibility = "hidden";
+      window.scrollTo(0, 0);
+    }
+    function flip() {
+      if (fc.flipped) return;
+      fc.flipped = true;
+      $("fc-card").classList.add("flipped");
+      $("fc-actions").style.visibility = "visible";
+    }
+    function rate(ok) {
+      if (!fc.flipped) return;
+      const c = fc.queue.shift();
+      if (!ok) { fc.missed.add(c.id); fc.queue.push(c); }
+      if (fc.queue.length) return showCard();
+      const first = fc.total - fc.missed.size;
+      progress.law = progress.law || {};
+      progress.law[fc.block] = Math.max(progress.law[fc.block] || 0, first);
+      bumpStreak();
+      saveProgress();
+      $("fc-progress").style.width = "100%";
+      $("fc-count").textContent = `${fc.total}/${fc.total}`;
+      $("fc-area").style.display = "none";
+      $("fc-done").innerHTML = `
+        <div class="score-hero">
+          <div class="score-emoji">${first === fc.total ? "🏆" : "🃏"}</div>
+          <div class="score-pct" style="color:${first === fc.total ? "#059669" : "#3B82F6"}">${first}/${fc.total}</div>
+          <div class="score-sub">lembrados de primeira${fc.missed.size ? ` · ${fc.missed.size} revisado${fc.missed.size > 1 ? "s" : ""} até acertar` : ""}</div>
+        </div>
+        <div class="action-col">
+          <button class="btn-3d" onclick="G.startLawQuiz('${fc.block}')">✏️ Fazer exercícios deste bloco</button>
+          <button class="btn-3d ghost" onclick="G.startCards('${fc.block}')">↺ Repetir flashcards</button>
+          <button class="btn-3d ghost" onclick="G.home()">Voltar</button>
+        </div>`;
+    }
+
     function retry() {
       const L = state.last;
       runSession(buildQuestions(L.topics, L.n, L.diff), L.hearts);
@@ -608,7 +726,7 @@
         { label: "Acertos", val: `${correct}/${total}` },
       ].map(m => `<div class="metric-card"><div class="metric-val">${m.val}</div><div class="metric-lbl">${m.label}</div></div>`).join("");
 
-      const used = TOPICS.filter(t => state.answers.some(a => a.q.topic === t.id));
+      const used = ALL_TOPICS.filter(t => state.answers.some(a => a.q.topic === t.id));
       $("breakdown-list").innerHTML = used.map(t => {
         const A = state.answers.filter(a => a.q.topic === t.id);
         const C = A.filter(a => a.correct).length;
@@ -655,6 +773,7 @@
         buildHome();
       },
       openTopic, openTheory, closeModal, startLesson, startTraining, retry, redoWrong,
+      startLawQuiz, startCards, flip, rate,
       pick, gap, matchTap, main, toggleExplain, quit, toggleHist, home,
       _state: state,
     };

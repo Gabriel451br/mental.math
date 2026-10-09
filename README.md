@@ -1,6 +1,6 @@
 # 🧠 Treino para Concursos
 
-Ferramentas de estudo para concursos em geral, em formato de jogo. A página inicial mostra as **matérias** (toque numa para ver os tópicos — os endereços `#rlm` e `#portugues` abrem direto):
+Ferramentas de estudo para concursos em geral, em formato de jogo. A página inicial mostra as **matérias** (toque numa para ver os tópicos — os endereços `#rlm`, `#portugues` e `#constitucional` abrem direto):
 
 | Matéria | Jogo | Arquivo |
 |---------|------|---------|
@@ -8,6 +8,7 @@ Ferramentas de estudo para concursos em geral, em formato de jogo. A página ini
 | Raciocínio Lógico-Matemático (RLM) | ⏱️ Cálculo cronometrado (dentro da Matemática Mental) | `matematica-rapida.html` |
 | Raciocínio Lógico-Matemático (RLM) | 🧠 Lógica Proposicional | `logica.html` + `logica-engine.js` |
 | Língua Portuguesa | ✍️ Fonologia e Acentuação | `portugues.html` + `portugues-engine.js` |
+| Direito Constitucional | 📜 Constituição Federal (trilha, treino e lei seca) | `constitucional.html` + `constitucional-engine.js` |
 
 Os jogos estilo Duolingo compartilham o mesmo motor (`duo.js` + `duo.css`), com duas abas:
 - **🗺️ Trilha:** unidades em sequência; cada lição tem 10 questões, 5 vidas, e a dificuldade sobe sozinha conforme você ganha estrelas.
@@ -24,6 +25,15 @@ Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular di
 - **Resposta digitada** (e perguntas de "qual o próximo passo?"); no Fácil aparece uma dica da técnica
 - Ao errar: o passo a passo da técnica com os números da questão
 - Na aba **Treino** fica o **Cálculo cronometrado** clássico
+
+## 📜 Constituição Federal (Direito Constitucional)
+
+- **Trilha com 9 unidades, em ordem lógica:** Teoria da Constituição · Princípios fundamentais · Direitos individuais · Remédios constitucionais · Direitos sociais · Nacionalidade · Direitos políticos · Organização do Estado · Administração Pública
+- Questões de múltipla escolha, **certo/errado (estilo Cebraspe)**, classificação (ex.: privativa × concorrente, nato × naturalizado) e ligar pares, com explicação citando o artigo
+- **Aba 📜 Lei seca:** 9 blocos com os artigos mais cobrados no texto literal (arts. 1º–4º, 5º, remédios, 6º–9º, 12–13, 14–16, 18/19/22/24, 37/41 e 60)
+  - **Flashcards:** pergunta → toque para ver o texto da lei → "Lembrei / Não lembrei" (os esquecidos voltam para o fim)
+  - **Exercícios:** complete a lacuna, certo/errado com o texto alterado e ligar assunto ao dispositivo
+- Para incluir artigos, adicione itens em `LAW_BLOCKS` marcando os termos-chave como `[[correto|errado1|errado2]]`
 
 ## ✍️ Fonologia e Acentuação (Português)
 
@@ -85,6 +95,8 @@ Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular di
    logica-engine.js
    portugues.html
    portugues-engine.js
+   constitucional.html
+   constitucional-engine.js
    duo.js
    duo.css
    manifest.json
@@ -122,7 +134,9 @@ treino-concursos/
 ├── logica-engine.js ← Gerador de questões e explicações de lógica
 ├── portugues.html   ← Jogo de fonologia e acentuação (interface)
 ├── portugues-engine.js ← Banco de palavras, regras e questões de português
-├── duo.js / duo.css ← Motor compartilhado: trilha, treino, vidas, XP e dinâmicas
+├── constitucional.html ← Direito Constitucional: trilha, treino e lei seca
+├── constitucional-engine.js ← Questões, lei seca (texto da CF/88) e flashcards
+├── duo.js / duo.css ← Motor compartilhado: trilha, treino, lei seca, vidas, XP e dinâmicas
 ├── manifest.json    ← Configuração PWA
 ├── sw.js            ← Service Worker (cache offline)
 ├── icons/
