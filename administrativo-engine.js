@@ -525,6 +525,147 @@
     ] },
   ];
 
+  /* ── Repertório extra (menos repetição) ──────────────────── */
+  const more = (u, { mc = [], ce = [], sets = [] }) => {
+    UNITS[u].mc.push(...mc); UNITS[u].ce.push(...ce); UNITS[u].sets.push(...sets);
+  };
+  more("princ", {
+    mc: [
+      ["Segundo a Lei 9.784/99, a norma administrativa deve ser interpretada da forma que melhor garanta o fim público, sendo vedada:", "A aplicação retroativa de nova interpretação", ["A interpretação extensiva", "A analogia em favor do administrado", "A revisão de atos anteriores"],
+        "Art. 2º, parágrafo único, XIII — protege a segurança jurídica.", 3],
+      ["O princípio que exige a indicação dos pressupostos de fato e de direito que determinaram a decisão é o da:", "Motivação", ["Publicidade", "Eficiência", "Continuidade"],
+        "Lei 9.784/99, art. 2º, parágrafo único, VII, e art. 50.", 1],
+      ["A indisponibilidade do interesse público significa que o administrador:", "Não pode abrir mão dos interesses públicos que gere, pois não é o dono deles", ["Pode renunciar a competências quando quiser", "Pode dispor livremente dos bens públicos", "Deve priorizar interesses privados relevantes"],
+        "Ele gere interesses da coletividade. Por isso a Lei 9.784/99 veda a renúncia de poderes ou competências, salvo autorização em lei (art. 2º, parágrafo único, II).", 2],
+    ],
+    ce: [
+      ["A Súmula Vinculante 13 alcança o nepotismo cruzado (designações recíprocas).", true, "O texto da SV 13 fala expressamente em “ajuste mediante designações recíprocas”.", 2],
+      ["Para o STF, a SV 13, em regra, não alcança a nomeação para cargos de natureza política, como secretário de Estado, salvo fraude ou falta evidente de qualificação.", true, "Entendimento do STF (ex.: Rcl 6.650).", 3],
+    ],
+    sets: [
+      { ask: it => `Situação: ${it} Qual princípio foi violado ou aplicado?`,
+        cats: {
+          "Legalidade": ["Um servidor quer aplicar uma multa que nenhuma lei prevê."],
+          "Impessoalidade": ["A placa de uma obra pública traz a foto e o nome do prefeito."],
+          "Publicidade": ["Um contrato administrativo é mantido em segredo sem nenhuma justificativa legal."],
+          "Eficiência": ["Um órgão leva anos para analisar pedidos simples por pura desorganização."],
+          "Autotutela": ["A Administração anula, por conta própria, uma licença concedida ilegalmente."],
+          "Continuidade": ["Uma lei limita a greve em serviços essenciais para que a população não fique desatendida."],
+        },
+        why: "Legalidade: só agir com base em lei. Impessoalidade: sem promoção pessoal (art. 37, § 1º). Publicidade: transparência. Eficiência: resultados. Autotutela: rever os próprios atos. Continuidade: serviço público não para." },
+    ],
+  });
+  more("resp", {
+    mc: [
+      ["Prazo prescricional da ação de indenização contra a Fazenda Pública (Decreto 20.910/32):", "5 anos", ["3 anos", "10 anos", "20 anos"],
+        "Decreto 20.910/32, art. 1º. O STJ aplica os 5 anos, e não os 3 anos do Código Civil.", 2],
+      ["Segundo a CF, a responsabilidade civil por danos nucleares:", "Independe da existência de culpa", ["Depende de prova de dolo", "É subjetiva", "É excluída por força maior"],
+        "Art. 21, XXIII, d, CF — exemplo de risco integral.", 2],
+      ["Para o STF, as ações de ressarcimento ao erário fundadas em ato doloso de improbidade são:", "Imprescritíveis", ["Prescritíveis em 5 anos", "Prescritíveis em 8 anos", "Prescritíveis em 10 anos"],
+        "Tema 897 do STF (art. 37, § 5º, CF). O ressarcimento por ilícito civil comum prescreve (Tema 666).", 3],
+    ],
+    ce: [
+      ["O Estado responde objetivamente por todos os danos decorrentes de atos jurisdicionais típicos.", false, "Em regra não há responsabilidade por atos judiciais típicos. A exceção expressa é o erro judiciário e a prisão além do tempo fixado na sentença (art. 5º, LXXV, CF).", 3],
+      ["O Estado indenizará o condenado por erro judiciário, assim como quem ficar preso além do tempo fixado na sentença.", true, "Art. 5º, LXXV, CF.", 2],
+    ],
+    sets: [
+      { ask: it => `Situação: ${it} Qual é o resultado?`,
+        cats: {
+          "O Estado indeniza": ["Viatura policial em serviço bate num carro parado no semáforo.", "Ônibus de concessionária atropela pedestre na faixa.", "Hospital público troca a medicação e causa dano ao paciente."],
+          "Não indeniza (excludente)": ["Pessoa se joga na frente de uma viatura em velocidade normal (culpa exclusiva da vítima).", "Raio imprevisível atinge escola pública, sem nenhuma falha do serviço (força maior)."],
+          "Indenização reduzida": ["Pedestre atravessa fora da faixa e é atingido por viatura em alta velocidade (culpa concorrente)."],
+        },
+        why: "Risco administrativo: conduta + dano + nexo geram dever de indenizar. Culpa exclusiva da vítima, caso fortuito/força maior e fato de terceiro excluem. Culpa concorrente reduz o valor." },
+    ],
+  });
+  more("poder", {
+    mc: [
+      ["Segundo a Lei 9.784/99, a delegação de competência pode ser feita a órgãos ou titulares:", "Ainda que não sejam hierarquicamente subordinados ao delegante", ["Somente se forem subordinados ao delegante", "Somente de outro Poder", "Apenas mediante lei específica"],
+        "Art. 12.", 2],
+      ["Os ciclos (fases) do poder de polícia são:", "Ordem, consentimento, fiscalização e sanção", ["Lei, decreto, portaria e multa", "Investigação, denúncia, julgamento e pena", "Planejamento, execução, controle e avaliação"],
+        "A ordem de polícia (a lei) é indelegável; consentimento e fiscalização podem ser delegados nas condições do Tema 532 do STF.", 3],
+    ],
+  });
+  more("improb", {
+    mc: [
+      ["A Lei de Improbidade também se aplica:", "Ao particular que induza ou concorra dolosamente para o ato", ["Somente a servidores efetivos", "Somente a agentes políticos", "Apenas a empregados de empresas privadas"],
+        "Art. 3º da Lei 8.429/92.", 1],
+      ["Na lesão ao erário (art. 10), após a reforma de 2021, exige-se:", "Perda patrimonial efetiva e comprovada, com dolo", ["Dano presumido, bastando culpa", "Qualquer irregularidade formal", "Apenas a violação de princípios"],
+        "Art. 10, caput: ação ou omissão dolosa que enseje, efetiva e comprovadamente, perda patrimonial.", 2],
+    ],
+  });
+
+  more("proc", {
+    mc: [
+      ["O processo administrativo pode ser iniciado:", "De ofício ou a pedido do interessado", ["Somente a pedido do interessado", "Somente de ofício", "Somente por ordem judicial"], "Lei 9.784/99, art. 5º.", 1],
+      ["Quanto às despesas processuais, a Lei 9.784/99 estabelece:", "É proibida a cobrança, ressalvadas as previstas em lei", ["São sempre cobradas do interessado", "São cobradas só em caso de recurso", "São divididas entre a Administração e o interessado"], "Art. 2º, parágrafo único, XI.", 2],
+      ["Em regra, o recurso administrativo:", "Não tem efeito suspensivo", ["Sempre suspende a decisão recorrida", "Só pode ser interposto por advogado", "Depende de caução"],
+        "Art. 61: salvo disposição em contrário, não tem efeito suspensivo; a autoridade pode concedê-lo se houver justo receio de prejuízo de difícil ou incerta reparação.", 2],
+      ["Salvo exigência legal, a interposição de recurso administrativo independe de:", "Caução", ["Prazo", "Legitimidade", "Fundamentação"], "Art. 56, § 2º. E a SV 21 proíbe exigir depósito ou arrolamento prévio.", 2],
+    ],
+    ce: [
+      ["É inconstitucional exigir depósito ou arrolamento prévio de dinheiro ou bens para admitir recurso administrativo.", true, "Súmula Vinculante 21.", 2],
+      ["O interessado pode, por manifestação escrita, desistir total ou parcialmente do pedido formulado.", true, "Art. 51 da Lei 9.784/99.", 1],
+    ],
+    sets: [
+      { ask: it => `Em regra, ${it}:`,
+        cats: {
+          "Pode ser delegada": ["a assinatura de contratos do órgão", "a autorização de férias de servidores", "a concessão de diárias"],
+          "Não pode ser delegada": ["a edição de atos de caráter normativo", "a decisão de recursos administrativos", "matéria de competência exclusiva do órgão"],
+        },
+        why: "Lei 9.784/99, art. 13 — não se delegam (CE-NO-RE): competência exclusiva, atos normativos e decisão de recursos. O resto, em regra, pode ser delegado (art. 12)." },
+    ],
+  });
+  more("resp", {
+    mc: [["Para haver responsabilidade objetiva do Estado, é preciso demonstrar:", "Conduta, dano e nexo causal", ["Culpa do agente", "Dolo do agente", "Condenação criminal do agente"], "Na responsabilidade objetiva não se discute culpa: basta conduta, dano e nexo causal.", 1]],
+    ce: [["Na teoria do risco administrativo, a culpa exclusiva da vítima exclui a responsabilidade do Estado.", true, "Rompe o nexo causal.", 1]],
+  });
+
+  /* ── Lei seca extra ──────────────────────────────────────── */
+  const block = id => LAW_BLOCKS.find(b => b.id === id);
+  block("princ").items.push(
+    L("Lei 9.784/99, art. 2º, par. único, II", "Vedação de renúncia de competência", "O que diz o critério do art. 2º, parágrafo único, II?",
+      "atendimento a fins de interesse geral, vedada a [[renúncia total ou parcial|delegação total ou parcial|transferência temporária]] de poderes ou competências, salvo autorização em lei;"),
+    L("Lei 9.784/99, art. 2º, par. único, VII", "Motivação", "O que diz o critério do art. 2º, parágrafo único, VII?",
+      "indicação dos pressupostos de [[fato e de direito|fato, apenas|direito, apenas]] que determinarem a decisão;"),
+    L("Lei 9.784/99, art. 2º, par. único, XIII", "Interpretação da norma", "Como deve ser interpretada a norma administrativa?",
+      "interpretação da norma administrativa da forma que melhor garanta o atendimento do fim público a que se dirige, vedada aplicação [[retroativa|extensiva|analógica]] de nova interpretação."),
+    L("Súmula Vinculante 13", "Nepotismo", "O que proíbe a Súmula Vinculante 13?",
+      "A nomeação de cônjuge, companheiro ou parente em linha reta, colateral ou por afinidade, até o [[terceiro|segundo|quarto]] grau, inclusive, da autoridade nomeante ou de servidor da mesma pessoa jurídica investido em cargo de direção, chefia ou assessoramento, para o exercício de cargo em comissão ou de confiança ou, ainda, de função gratificada na administração pública direta e indireta em qualquer dos Poderes da União, dos Estados, do Distrito Federal e dos Municípios, compreendido o ajuste mediante designações [[recíprocas|sucessivas|temporárias]], viola a Constituição Federal."),
+  );
+  block("org").items.push(
+    L("DL 200/67, art. 4º", "Composição da Administração Federal", "Como o DL 200/67 divide a Administração Federal?",
+      "A Administração Federal compreende: I - A Administração Direta, que se constitui dos serviços integrados na estrutura administrativa da [[Presidência da República e dos Ministérios|União, dos Estados e dos Municípios|Presidência da República e das autarquias]]. II - A Administração Indireta, que compreende as seguintes categorias de entidades, dotadas de personalidade jurídica [[própria|de direito público|de direito privado]]: a) Autarquias; b) Empresas Públicas; c) Sociedades de Economia Mista; d) fundações públicas."),
+    L("CF, art. 37, XX", "Subsidiárias", "O que é preciso para criar subsidiárias das estatais?",
+      "depende de autorização [[legislativa|do Presidente da República|do Tribunal de Contas]], em cada caso, a criação de subsidiárias das entidades mencionadas no inciso anterior, assim como a participação de qualquer delas em empresa privada;"),
+  );
+  block("poder").items.push(
+    L("Lei 9.784/99, art. 12", "Delegação de competência", "Quando e a quem a competência pode ser delegada?",
+      "Um órgão administrativo e seu titular poderão, se não houver impedimento legal, delegar [[parte|a totalidade|o núcleo]] da sua competência a outros órgãos ou titulares, ainda que estes [[não lhe sejam|lhe sejam]] hierarquicamente subordinados, quando for conveniente, em razão de circunstâncias de índole técnica, social, econômica, jurídica ou territorial."),
+    L("Lei 9.784/99, art. 14, § 3º", "Decisões por delegação", "Como são consideradas as decisões tomadas por delegação?",
+      "As decisões adotadas por delegação devem mencionar explicitamente esta qualidade e considerar-se-ão editadas pelo [[delegado|delegante|superior hierárquico]]."),
+  );
+  block("atos").items.push(
+    L("Lei 9.784/99, art. 50, I e II", "Dever de motivar", "Quando os atos devem ser motivados (incisos I e II)?",
+      "Os atos administrativos deverão ser motivados, com indicação dos fatos e dos fundamentos jurídicos, quando: I - neguem, limitem ou afetem [[direitos ou interesses|apenas direitos adquiridos|interesses coletivos]]; II - imponham ou agravem deveres, encargos ou [[sanções|tributos|prazos]];"),
+    L("Lei 9.784/99, art. 50, § 1º", "Motivação aliunde", "Como deve ser a motivação e o que ela pode conter?",
+      "A motivação deve ser explícita, clara e [[congruente|sucinta|técnica]], podendo consistir em declaração de concordância com fundamentos de anteriores pareceres, informações, decisões ou propostas, que, neste caso, serão parte integrante do ato."),
+    L("Lei 4.717/65, art. 2º", "Vícios que tornam o ato nulo", "Quais vícios tornam nulo o ato lesivo (Lei da Ação Popular)?",
+      "São nulos os atos lesivos ao patrimônio das entidades mencionadas no artigo anterior, nos casos de: a) incompetência; b) vício de [[forma|conveniência|oportunidade]]; c) ilegalidade do objeto; d) inexistência dos [[motivos|recursos|pareceres]]; e) desvio de finalidade."),
+    L("Lei 9.784/99, art. 54, § 1º", "Decadência e efeitos contínuos", "Como se conta a decadência quando há efeitos patrimoniais contínuos?",
+      "No caso de efeitos patrimoniais contínuos, o prazo de decadência contar-se-á da percepção do [[primeiro|último|décimo]] pagamento."),
+  );
+  block("resp").items.push(
+    L("CF, art. 5º, LXXV", "Erro judiciário", "Quando o Estado indeniza por atos do Judiciário (art. 5º, LXXV)?",
+      "o Estado indenizará o condenado por erro [[judiciário|administrativo|legislativo]], assim como o que ficar preso além do tempo fixado na [[sentença|denúncia|prisão preventiva]];"),
+    L("CF, art. 21, XXIII, d", "Danos nucleares", "Como é a responsabilidade por danos nucleares?",
+      "a responsabilidade civil por danos nucleares [[independe|depende]] da existência de culpa;"),
+    L("CF, art. 37, § 5º", "Prescrição e ressarcimento", "O que a CF diz sobre prescrição de ilícitos contra o erário?",
+      "A lei estabelecerá os prazos de prescrição para ilícitos praticados por qualquer agente, servidor ou não, que causem prejuízos ao erário, ressalvadas as respectivas ações de [[ressarcimento|improbidade|indenização por dano moral]]."),
+    L("Decreto 20.910/32, art. 1º", "Prescrição contra a Fazenda", "Em quanto tempo prescrevem as ações contra a Fazenda Pública?",
+      "As dívidas passivas da União, dos Estados e dos Municípios, bem assim todo e qualquer direito ou ação contra a Fazenda federal, estadual ou municipal, seja qual for a sua natureza, prescrevem em [[cinco|três|dez]] anos contados da data do ato ou fato do qual se originarem."),
+  );
+
   /* ════════════════════════════════════════════════════════════
      TÓPICOS (trilha, em ordem lógica)
   ════════════════════════════════════════════════════════════ */

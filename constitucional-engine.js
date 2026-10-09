@@ -380,6 +380,78 @@
     },
   };
 
+  /* ── Repertório extra (menos repetição) ──────────────────── */
+  const more = (u, { mc = [], ce = [] }) => { UNITS[u].mc.push(...mc); UNITS[u].ce.push(...ce); };
+  more("princ", {
+    mc: [
+      ["“Construir uma sociedade livre, justa e solidária” é:", "Objetivo fundamental (art. 3º)", ["Fundamento (art. 1º)", "Princípio das relações internacionais (art. 4º)", "Direito social (art. 6º)"], "Art. 3º, I.", 1],
+      ["“Autodeterminação dos povos” é:", "Princípio das relações internacionais (art. 4º)", ["Fundamento (art. 1º)", "Objetivo fundamental (art. 3º)", "Cláusula pétrea expressa"], "Art. 4º, III.", 1],
+      ["A expressão “Estado Democrático de Direito”, no art. 1º, indica que:", "O Estado se submete às leis e o poder emana do povo", ["O Estado está acima das leis", "Só os eleitos exercem o poder", "Os Poderes se subordinam ao Executivo"],
+        "Estado de Direito (submissão à lei) + Democrático (soberania popular, art. 1º, parágrafo único).", 2],
+    ],
+    ce: [["O pluralismo político é fundamento da República e não se confunde com o pluripartidarismo.", true, "Pluralismo político é mais amplo (diversidade de ideias, crenças e grupos). O pluripartidarismo é só uma de suas expressões (art. 17).", 2]],
+  });
+  more("rem", {
+    mc: [
+      ["Segundo a CF, NÃO cabe habeas corpus em relação a:", "Punições disciplinares militares", ["Prisão ilegal determinada por delegado", "Ameaça de prisão ilegal", "Prisão por ordem judicial sem fundamentação"],
+        "Art. 142, § 2º, CF. O STF admite o exame apenas da legalidade da punição, não do mérito.", 3],
+      ["O mandado de injunção é cabível quando:", "A falta de norma regulamentadora torna inviável o exercício de direito constitucional", ["Há ato ilegal de autoridade contra direito líquido e certo", "Alguém sofre coação na liberdade de locomoção", "Há ato lesivo ao patrimônio público"], "Art. 5º, LXXI.", 1],
+      ["O mandado de segurança é cabível contra ato de:", "Autoridade pública ou agente de pessoa jurídica no exercício de atribuições do Poder Público", ["Qualquer particular", "Somente juízes", "Somente o Presidente da República"], "Art. 5º, LXIX.", 2],
+      ["O habeas data permite conhecer informações do impetrante constantes de bancos de dados:", "De entidades governamentais ou de caráter público", ["Somente de empresas privadas", "Apenas do Poder Judiciário", "De qualquer pessoa física"], "Art. 5º, LXXII, a.", 2],
+    ],
+    ce: [
+      ["Partido político sem representação no Congresso Nacional pode impetrar mandado de segurança coletivo.", false, "Art. 5º, LXX, a: exige-se representação no Congresso Nacional.", 2],
+      ["Qualquer pessoa, inclusive o estrangeiro não eleitor, pode propor ação popular.", false, "Só o <b>cidadão</b> (eleitor) — art. 5º, LXXIII.", 1],
+    ],
+  });
+  more("soc", {
+    mc: [
+      ["Segundo o art. 9º, sobre a oportunidade de exercer o direito de greve decidem:", "Os trabalhadores", ["Os juízes do trabalho", "Os empregadores", "O Ministério do Trabalho"],
+        "Art. 9º. Nas atividades essenciais, a lei dispõe sobre o atendimento das necessidades inadiáveis (§ 1º), mas a greve não é proibida.", 2],
+      ["A proteção à maternidade e à infância está prevista como:", "Direito social (art. 6º)", ["Fundamento da República", "Princípio das relações internacionais", "Cláusula pétrea expressa"], "Art. 6º.", 1],
+    ],
+  });
+  more("nac", {
+    mc: [
+      ["O brasileiro naturalizado pode ser extraditado:", "Por crime comum anterior à naturalização ou por comprovado envolvimento em tráfico de drogas", ["Por qualquer crime, a qualquer tempo", "Nunca", "Apenas por crime político"], "Art. 5º, LI.", 2],
+      ["Na naturalização extraordinária exige-se, além da residência e da ausência de condenação penal:", "Que o estrangeiro requeira a nacionalidade", ["Casamento com brasileiro", "Prova de domínio da língua portuguesa", "Ter filho brasileiro"], "Art. 12, II, b: “desde que requeiram a nacionalidade brasileira”.", 2],
+    ],
+  });
+  more("pol", {
+    mc: [
+      ["A idade mínima para Vereador é de:", "18 anos", ["21 anos", "16 anos", "25 anos"], "Art. 14, § 3º, VI, d.", 1],
+      ["Os conscritos, durante o serviço militar obrigatório:", "Não podem alistar-se como eleitores", ["Têm voto facultativo", "Têm voto obrigatório", "Podem votar, mas não ser votados"], "Art. 14, § 2º.", 1],
+    ],
+  });
+  more("org", {
+    mc: [
+      ["Legislar sobre direito do trabalho compete:", "Privativamente à União", ["Concorrentemente à União, aos Estados e ao DF", "Aos Municípios", "Aos Estados, de forma residual"], "Art. 22, I.", 1],
+      ["Legislar sobre direito urbanístico compete:", "Concorrentemente à União, aos Estados e ao DF", ["Privativamente à União", "Exclusivamente aos Municípios", "Privativamente aos Estados"], "Art. 24, I (PUFETO).", 2],
+    ],
+    ce: [["Na competência concorrente, lei federal de normas gerais superveniente revoga a lei estadual contrária.", false, "Ela <b>suspende a eficácia</b> da lei estadual no que lhe for contrário (art. 24, § 4º).", 2]],
+  });
+  more("adm", {
+    mc: [
+      ["A investidura em cargo ou emprego público depende de concurso público de:", "Provas ou de provas e títulos", ["Títulos, apenas", "Provas, títulos ou entrevista", "Análise curricular"], "Art. 37, II.", 1],
+      ["A lei reservará percentual dos cargos e empregos públicos para:", "Pessoas com deficiência", ["Servidores aposentados", "Estrangeiros", "Ex-militares"], "Art. 37, VIII.", 1],
+    ],
+  });
+
+  more("teoria", {
+    mc: [
+      ["Constituição outorgada é aquela:", "Imposta pelo governante, sem participação popular", ["Elaborada por assembleia eleita pelo povo", "Formada pelos costumes", "Aprovada por plebiscito"], "Ex.: Constituições de 1824 e 1937. A de 1988 é promulgada.", 1],
+      ["Cláusulas pétreas são:", "Matérias que não podem ser abolidas por emenda constitucional", ["Normas que só o STF pode alterar", "Artigos que não podem ser regulamentados por lei", "Normas de eficácia limitada"], "Art. 60, § 4º.", 1],
+    ],
+    ce: [["O Presidente da República pode propor emenda à Constituição.", true, "Art. 60, II.", 1]],
+  });
+  more("adm", {
+    mc: [["Os cargos em comissão destinam-se apenas às atribuições de:", "Direção, chefia e assessoramento", ["Execução e fiscalização", "Atividades técnicas permanentes", "Atendimento ao público"], "Art. 37, V.", 1]],
+    ce: [["O direito de greve do servidor público será exercido nos termos e nos limites definidos em lei específica.", true, "Art. 37, VII.", 1]],
+  });
+  more("soc", {
+    mc: [["É direito social previsto no art. 6º:", "A alimentação", ["A propriedade", "O voto", "A nacionalidade"], "Art. 6º (alimentação incluída pela EC 64/2010).", 1]],
+  });
+
   /* ════════════════════════════════════════════════════════════
      LEI SECA — texto literal da CF/88 (artigos mais cobrados)
      L(dispositivo, assunto, pergunta do flashcard, texto)

@@ -27,7 +27,11 @@
   ];
   const NUMQS = [5, 10, 15, 20];
   const MAX_HEARTS = 5, XP_CORRECT = 10, XP_COMBO = 5, XP_PERFECT = 20;
-  const LESSON_Q = 10, LESSONS_PER_LEVEL = 2, MAX_LEVEL = 5;
+  const LESSON_Q = 10, MAX_LEVEL = 5;
+  // Estrelas: lição com >= 90% ganha a estrela na hora; com mais de 75%, a estrela
+  // fica pendente até o aluno refazer os erros e acertar todos.
+  const STAR_DIRECT = 90, STAR_WITH_FIX = 75;
+  const RECENT_MAX = 60; // questões recentes lembradas por conteúdo, para evitar repetição
   const diffForLevel = l => (l < 2 ? "easy" : l < 4 ? "medium" : "hard");
 
   function DuoGame(cfg) {
@@ -68,13 +72,18 @@
     function saveProgress() {
       try { localStorage.setItem(cfg.storeKey, JSON.stringify(progress)); } catch (e) {}
     }
-    const topicProg = id => (progress.topics[id] = progress.topics[id] || { lessons: 0, correct: 0, total: 0 });
-    function levelInfo(id) {
-      const l = topicProg(id).lessons;
-      const level = Math.min(MAX_LEVEL, Math.floor(l / LESSONS_PER_LEVEL));
-      const pct = level >= MAX_LEVEL ? 100 : ((l % LESSONS_PER_LEVEL) / LESSONS_PER_LEVEL) * 100;
-      return { level, pct, lessons: l };
+    function topicProg(id) {
+      const tp = (progress.topics[id] = progress.topics[id] || { lessons: 0, correct: 0, total: 0 });
+      // progresso salvo antes das estrelas: 2 lições valiam 1 nível — mantém o que já foi conquistado
+      if (tp.stars == null) tp.stars = Math.min(MAX_LEVEL, Math.floor(tp.lessons / 2));
+      return tp;
     }
+    function levelInfo(id) {
+      const tp = topicProg(id);
+      const level = Math.min(MAX_LEVEL, tp.stars);
+      return { level, pct: (level / MAX_LEVEL) * 100, lessons: tp.lessons };
+    }
+    const starsHTML = level => "★".repeat(level) + "☆".repeat(MAX_LEVEL - level);
     const dayStr = offset => new Date(Date.now() - offset * 864e5).toISOString().slice(0, 10);
     function bumpStreak() {
       const s = progress.streak;
@@ -248,6 +257,7 @@
       <div class="score-sub" id="res-sub"></div>
       <div class="score-xp" id="res-xp"></div>
     </div>
+    <div id="res-star"></div>
     <div class="metrics-grid" id="metrics-grid"></div>
     <div class="card"><div class="card-title">Por conteúdo</div><div id="breakdown-list"></div></div>
     <div class="history" id="history-list"></div>
@@ -282,7 +292,7 @@
       const offsets = [0, 50, 70, 40, -10, -55, -60, -25];
       $("path").innerHTML = TOPICS.map((t, i) => {
         const L = levelInfo(t.id);
-        const stars = "★".repeat(L.level) + "☆".repeat(MAX_LEVEL - L.level);
+        const stars = starsHTML(L.level);
         return `
           <div class="node" style="transform:translateX(${offsets[i % offsets.length]}px)">
             <button class="node-btn" style="background:${t.bg};border-color:${t.border};border-bottom-color:${t.color}" onclick="G.openTopic('${t.id}')">
@@ -312,8 +322,9 @@
         $("law-list").innerHTML = LAW.blocks.map(b => {
           const n = LAW.cards(b.id).length, best = progress.law[b.id];
           const tp = progress.topics["lei:" + b.id];
+          const lv = levelInfo("lei:" + b.id).level;
           return `<div class="law-block">
-            <div class="law-head"><span class="law-ref">${b.ref}</span><span class="law-label">${b.label}</span></div>
+            <div class="law-head"><span class="law-ref">${b.ref}</span><span class="law-label">${b.label} <span class="node-stars">${starsHTML(lv)}</span></span></div>
             <div class="law-meta">${n} dispositivos${best != null ? ` · 🃏 melhor: ${best}/${n} de primeira` : ""}${tp && tp.total ? ` · ✏️ ${Math.round((tp.correct / tp.total) * 100)}% de acerto` : ""}</div>
             <div class="law-actions">
               <button class="btn-3d ghost" onclick="G.startCards('${b.id}')">🃏 Flashcards</button>
@@ -334,8 +345,9 @@
         <div class="modal-head"><span class="modal-icon">${t.icon}</span><span class="modal-title">${t.label}</span>
           <button class="btn-close" onclick="G.closeModal()">✕</button></div>
         <div class="modal-desc">${t.desc}</div>
-        <div class="muted">Nível ${L.level} de ${MAX_LEVEL} · ${L.lessons} liç${L.lessons === 1 ? "ão" : "ões"} · ${acc}</div>
+        <div class="muted"><span class="node-stars" style="font-size:14px">${starsHTML(L.level)}</span> Nível ${L.level} de ${MAX_LEVEL} · ${L.lessons} liç${L.lessons === 1 ? "ão" : "ões"} · ${acc}</div>
         <div class="level-bar"><div class="level-fill" style="width:${L.pct}%;background:${t.color}"></div></div>
+        <div class="star-rule">⭐ <b>90% ou mais</b>: estrela na hora · <b>mais de 75%</b>: estrela ao corrigir os erros</div>
         <div class="action-col">
           <button class="btn-3d" style="background:${t.color};border-bottom-color:rgba(0,0,0,.2)" onclick="G.startLesson('${id}')">
             Começar lição · ${dl}</button>
@@ -358,26 +370,57 @@
     /* ════════════════════════════════════════════
        SESSÕES
     ════════════════════════════════════════════ */
+    // Identifica uma questão pelo enunciado (sem HTML), pelas opções e, nos pares, pelo conjunto de pares
+    function qKey(q) {
+      const txt = (q.prompt + "|" + (q.options ? q.options.slice().sort().join(";") : "") + "|" +
+        (q.pairs ? q.pairs.map(p => p.join("=")).sort().join(";") : ""))
+        .replace(/<[^>]+>/g, "").replace(/\s+/g, " ");
+      let h = 0;
+      for (let i = 0; i < txt.length; i++) h = (h * 31 + txt.charCodeAt(i)) | 0;
+      return q.topic + ":" + (h >>> 0).toString(36);
+    }
+    // Evita repetir questões na mesma sessão e, quando possível, as vistas recentemente
     function buildQuestions(topics, n, diff) {
       const list = [];
       for (let i = 0; i < n; i++) list.push(topics[i % topics.length]);
-      return shuffle(list).map(t => genQ(t, diff));
+      progress.recent = progress.recent || {};
+      const used = new Set(), out = [];
+      for (const t of shuffle(list)) {
+        const recent = new Set(progress.recent[t] || []);
+        let q = null, fallback = null;
+        for (let tries = 0; tries < 60 && !q; tries++) {
+          const c = genQ(t, diff), k = qKey(c);
+          if (used.has(k)) continue;
+          if (!recent.has(k)) q = c;
+          else if (!fallback) fallback = c;
+        }
+        q = q || fallback || genQ(t, diff);
+        const k = qKey(q);
+        used.add(k);
+        const r = (progress.recent[t] = (progress.recent[t] || []).filter(x => x !== k));
+        r.push(k);
+        if (r.length > RECENT_MAX) r.splice(0, r.length - RECENT_MAX);
+        out.push(q);
+      }
+      saveProgress();
+      return out;
     }
     // Trilha: lição curta, com vidas, dificuldade pelo nível da unidade
     function startLesson(id) {
       const diff = diffForLevel(levelInfo(id).level);
-      state.last = { topics: [id], n: LESSON_Q, diff, hearts: true };
-      runSession(buildQuestions([id], LESSON_Q, diff), true);
+      state.last = { topics: [id], n: LESSON_Q, diff, hearts: true, starTopic: id };
+      runSession(buildQuestions([id], LESSON_Q, diff), true, { starTopic: id });
     }
     // Treino: configurações escolhidas pelo usuário
     function startTraining() {
       state.last = { topics: state.mixTopics.slice(), n: state.numQ, diff: state.diff, hearts: state.hearts };
-      runSession(buildQuestions(state.last.topics, state.numQ, state.diff), state.hearts);
+      runSession(buildQuestions(state.last.topics, state.numQ, state.diff), state.hearts, {});
     }
-    // Lei seca: exercícios de um bloco (sem vidas, 10 questões, dificuldade escolhida no Treino)
+    // Lei seca: exercícios de um bloco (sem vidas, 10 questões, dificuldade pelo nível do bloco)
     function startLawQuiz(id) {
-      state.last = { topics: ["lei:" + id], n: LESSON_Q, diff: state.diff, hearts: false };
-      runSession(buildQuestions(state.last.topics, LESSON_Q, state.diff), false);
+      const t = "lei:" + id, diff = diffForLevel(levelInfo(t).level);
+      state.last = { topics: [t], n: LESSON_Q, diff, hearts: false, starTopic: t };
+      runSession(buildQuestions([t], LESSON_Q, diff), false, { starTopic: t });
     }
 
     // Lei seca: flashcards. Os que você não lembrou voltam para o fim do baralho.
@@ -436,17 +479,20 @@
 
     function retry() {
       const L = state.last;
-      runSession(buildQuestions(L.topics, L.n, L.diff), L.hearts);
+      // na trilha e na lei seca a dificuldade acompanha o nível atual (que pode ter subido)
+      const diff = L.starTopic ? diffForLevel(levelInfo(L.starTopic).level) : L.diff;
+      runSession(buildQuestions(L.topics, L.n, diff), L.hearts, { starTopic: L.starTopic });
     }
+    // Refazer os erros: se havia estrela pendente, acertar tudo garante a estrela
     function redoWrong() {
       const wrong = state.answers.filter(a => !a.correct).map(a => a.q);
-      if (wrong.length) runSession(wrong, state.useHearts);
+      if (wrong.length) runSession(wrong, state.useHearts, { fixFor: state.pendingStar || null });
     }
 
-    function runSession(questions, useHearts) {
+    function runSession(questions, useHearts, mode = {}) {
       closeModal();
       Object.assign(state, {
-        questions, useHearts, current: 0, answers: [], lives: MAX_HEARTS,
+        questions, useHearts, mode, current: 0, answers: [], lives: MAX_HEARTS,
         combo: 0, xp: 0, failed: false, totalStart: Date.now(),
       });
       showScreen("quiz");
@@ -705,7 +751,8 @@
       if (perfect) state.xp += XP_PERFECT;
       progress.xp += state.xp;
       state.answers.forEach(a => { const tp = topicProg(a.q.topic); tp.total++; if (a.correct) tp.correct++; });
-      if (!state.failed) [...new Set(state.questions.map(q => q.topic))].forEach(id => topicProg(id).lessons++);
+      if (!state.failed && !state.mode.fixFor) [...new Set(state.questions.map(q => q.topic))].forEach(id => topicProg(id).lessons++);
+      const star = starOutcome(pct, correct === total);
       bumpStreak();
       saveProgress();
 
@@ -718,6 +765,9 @@
         ? `Suas vidas acabaram na questão ${answered} de ${total}. Revise as explicações abaixo!`
         : `${correct} de ${total} corretas${perfect ? " — lição perfeita!" : ""}`;
       $("res-xp").textContent = `⚡ +${state.xp} XP${perfect ? ` (inclui +${XP_PERFECT} de bônus)` : ""}`;
+      $("res-star").innerHTML = star.html;
+      $("res-star").className = "star-box " + star.cls;
+      $("btn-redo").textContent = state.pendingStar ? "⭐ Corrigir os erros e ganhar a estrela" : "↺ Refazer as que errei";
 
       const avg = answered ? (totalMs / 1000 / answered).toFixed(1) : "0";
       $("metrics-grid").innerHTML = [
@@ -746,6 +796,38 @@
           <div class="history-body"></div>
         </div>`).join("");
       $("btn-redo").style.display = state.answers.some(a => !a.correct) ? "" : "none";
+    }
+
+    function addStar(id) {
+      const tp = topicProg(id);
+      tp.stars = Math.min(MAX_LEVEL, tp.stars + 1);
+      return tp.stars;
+    }
+    // Aplica a regra das estrelas ao fim da sessão e devolve a mensagem
+    function starOutcome(pct, allRight) {
+      const fixFor = state.mode.fixFor, topic = state.mode.starTopic;
+      state.pendingStar = null;
+      const name = id => topicMeta(id).label;
+      if (fixFor) {
+        if (allRight && !state.failed) {
+          const lv = addStar(fixFor);
+          return { cls: "ok", html: `⭐ <b>Erros corrigidos!</b> Estrela conquistada em ${name(fixFor)} — nível ${lv} de ${MAX_LEVEL}.` };
+        }
+        state.pendingStar = fixFor;
+        return { cls: "pending", html: `Quase! Ainda há erros. Refaça até acertar todos para ganhar a estrela de ${name(fixFor)}.` };
+      }
+      if (!topic) return { cls: "", html: "" };
+      if (levelInfo(topic).level >= MAX_LEVEL) return { cls: "ok", html: `🏆 ${name(topic)} já está no nível máximo (${MAX_LEVEL} estrelas).` };
+      if (state.failed) return { cls: "pending", html: `Sem estrela desta vez: termine a lição com mais de ${STAR_WITH_FIX}% para ganhar.` };
+      if (pct >= STAR_DIRECT) {
+        const lv = addStar(topic);
+        return { cls: "ok", html: `⭐ <b>${pct}%!</b> Você passou direto para o nível ${lv} de ${MAX_LEVEL} em ${name(topic)}.` };
+      }
+      if (pct > STAR_WITH_FIX) {
+        state.pendingStar = topic;
+        return { cls: "pending", html: `⭐ <b>Estrela à vista!</b> Você fez ${pct}%. Corrija os erros (acertando todos) para ganhar a estrela.` };
+      }
+      return { cls: "pending", html: `Para ganhar uma estrela: mais de ${STAR_WITH_FIX}% e corrigir os erros, ou ${STAR_DIRECT}% ou mais.` };
     }
 
     function toggleHist(i) {
