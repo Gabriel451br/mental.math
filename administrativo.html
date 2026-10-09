@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#B45309" />
-  <title>Constituição Federal — Treino para Concursos</title>
+  <meta name="theme-color" content="#0F766E" />
+  <title>Direito Administrativo — Treino para Concursos</title>
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="Constitucional" />
+  <meta name="apple-mobile-web-app-title" content="Administrativo" />
 
   <link rel="stylesheet" href="duo.css" />
 </head>
@@ -19,15 +19,15 @@
   <div id="app"></div>
 
   <script src="juridico-core.js"></script>
-  <script src="constitucional-engine.js"></script>
+  <script src="administrativo-engine.js"></script>
   <script src="duo.js"></script>
   <script>
     DuoGame({
-      storeKey: "constitucional-v1",
-      title: "Constituição Federal",
-      subtitle: "Direito Constitucional · CF/88",
-      backHref: "./#constitucional", backLabel: "← Direito Constitucional",
-      engine: ConstitucionalEngine,
+      storeKey: "administrativo-v1",
+      title: "Direito Administrativo",
+      subtitle: "Princípios, atos, licitações e mais",
+      backHref: "./#administrativo", backLabel: "← Direito Administrativo",
+      engine: AdministrativoEngine,
       diffDesc: { easy: "O essencial", medium: "Mais detalhes", hard: "Pegadinhas" },
     });
   </script>
