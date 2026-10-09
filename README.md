@@ -9,11 +9,13 @@ Ferramentas de estudo para concursos em geral, em formato de jogo. A página ini
 | Raciocínio Lógico-Matemático (RLM) | 🧠 Lógica Proposicional | `logica.html` + `logica-engine.js` |
 | Língua Portuguesa | ✍️ Fonologia e Acentuação | `portugues.html` + `portugues-engine.js` |
 | Direito Constitucional | 📜 Constituição Federal (trilha, treino e lei seca) | `constitucional.html` + `constitucional-engine.js` |
-| Direito Administrativo | 📑 Direito Administrativo (trilha, treino e lei seca) | `administrativo.html` + `administrativo-engine.js` |
+| Direito Administrativo | 📑 Administração Pública (trilha, treino e lei seca) | `administrativo.html` + `administrativo-engine.js` |
 
 Os jogos estilo Duolingo compartilham o mesmo motor (`duo.js` + `duo.css`), com duas abas:
 - **🗺️ Trilha:** unidades em sequência; cada lição tem 10 questões, 5 vidas, e a dificuldade sobe sozinha conforme você ganha estrelas.
 - **🎯 Treino:** você escolhe os conteúdos, a dificuldade, o número de questões e se joga com ou sem vidas.
+- **⭐ Estrelas (nível de cada unidade e bloco de lei seca, até 5):** lição com **90% ou mais** ganha a estrela na hora; com **mais de 75%**, a estrela vem ao refazer os erros acertando todos. A dificuldade da trilha sobe com as estrelas.
+- **Sem repetição:** a mesma lição nunca repete questão, e o app lembra as últimas questões vistas de cada conteúdo para variar entre uma lição e outra.
 
 Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular direto pelo navegador, sem App Store.
 

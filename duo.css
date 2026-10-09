@@ -384,3 +384,10 @@
     .fc-card.flipped .fc-hint { display: none; }
     .fc-actions { display: flex; gap: 10px; }
     .fc-actions .btn-3d { flex: 1; text-transform: none; }
+
+    /* ── Estrelas (progressão) ─────────────────────── */
+    .star-box { border-radius: 12px; padding: 12px 14px; margin-bottom: 1.1rem; font-size: 14px; line-height: 1.45; }
+    .star-box:empty { display: none; }
+    .star-box.ok { background: #FFFBEB; border: 1px solid #FDE68A; color: #92400E; }
+    .star-box.pending { background: #EFF6FF; border: 1px solid #BFDBFE; color: #1E40AF; }
+    .star-rule { font-size: 12px; color: #6B7280; margin-top: 6px; }
