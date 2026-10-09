@@ -21,13 +21,19 @@
       -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased;
     }
     .container { max-width: 560px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
-    .app-header { margin-bottom: 1.5rem; }
+    .app-header { margin-bottom: 1.2rem; }
     .app-title  { font-size: 22px; font-weight: 700; }
     .app-sub    { font-size: 13px; color: #9CA3AF; margin-top: 2px; }
-    .sec-label {
-      font-size: 11px; font-weight: 700; color: #6B7280;
-      text-transform: uppercase; letter-spacing: .8px; margin: 1.4rem 0 8px;
+
+    .subject { margin-top: 1.4rem; }
+    .subject-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .subject-icon {
+      width: 36px; height: 36px; border-radius: 10px; flex: none;
+      display: flex; align-items: center; justify-content: center; font-size: 19px;
     }
+    .subject-name { font-size: 15px; font-weight: 800; }
+    .subject-count { font-size: 12px; color: #9CA3AF; }
+
     .games { display: flex; flex-direction: column; gap: 10px; }
     .game {
       display: flex; align-items: center; gap: 14px; padding: 14px;
@@ -36,18 +42,20 @@
     }
     .game:active { transform: translateY(2px); }
     .game-icon {
-      width: 56px; height: 56px; border-radius: 14px; flex: none;
-      display: flex; align-items: center; justify-content: center; font-size: 28px;
+      width: 52px; height: 52px; border-radius: 14px; flex: none;
+      display: flex; align-items: center; justify-content: center; font-size: 26px;
     }
     .game-body { flex: 1; }
     .game-title { font-size: 16px; font-weight: 700; }
     .game-desc  { font-size: 12px; color: #6B7280; margin-top: 3px; line-height: 1.4; }
     .game-meta  { font-size: 11px; color: #9CA3AF; margin-top: 5px; }
+    .game-meta:empty { display: none; }
     .tag {
       font-size: 10px; font-weight: 800; letter-spacing: .5px; padding: 2px 6px; border-radius: 5px;
       background: #DCFCE7; color: #15803D; vertical-align: middle; margin-left: 4px;
     }
-    .game.soon { opacity: .55; pointer-events: none; border-bottom-width: 2px; }
+    .game.soon { opacity: .55; pointer-events: none; border-bottom-width: 2px; padding: 10px 14px; }
+    .game.soon .game-icon { width: 40px; height: 40px; font-size: 20px; }
     .game.soon .tag { background: #F3F4F6; color: #6B7280; }
     .arrow { font-size: 20px; color: #D1D5DB; }
   </style>
@@ -56,56 +64,76 @@
   <div class="container">
     <div class="app-header">
       <div class="app-title">Treino para Concursos</div>
-      <div class="app-sub">Jogos rápidos para aprender praticando</div>
+      <div class="app-sub">Ferramentas de estudo para aprender praticando</div>
     </div>
-
-    <div class="sec-label">Jogos</div>
-    <div class="games">
-      <a class="game" href="matematica.html">
-        <div class="game-icon" style="background:#EFF6FF">🧮</div>
-        <div class="game-body">
-          <div class="game-title">Matemática Mental</div>
-          <div class="game-desc">Adição, subtração, multiplicação, divisão, potência, raiz e porcentagem contra o relógio.</div>
-        </div>
-        <div class="arrow">›</div>
-      </a>
-
-      <a class="game" href="logica.html">
-        <div class="game-icon" style="background:#F5F3FF">🧠</div>
-        <div class="game-body">
-          <div class="game-title">Lógica Proposicional <span class="tag">NOVO</span></div>
-          <div class="game-desc">Proposições, conectivos, negações, equivalências, tabela-verdade e deduções — com explicação de cada erro.</div>
-          <div class="game-meta" id="logic-meta"></div>
-        </div>
-        <div class="arrow">›</div>
-      </a>
-    </div>
-
-    <div class="sec-label">Em breve</div>
-    <div class="games">
-      <div class="game soon">
-        <div class="game-icon" style="background:#FDF2F8">🗂️</div>
-        <div class="game-body">
-          <div class="game-title">Lógica de Argumentação <span class="tag">EM BREVE</span></div>
-          <div class="game-desc">Silogismos, diagramas lógicos e validade de argumentos.</div>
-        </div>
-      </div>
-      <div class="game soon">
-        <div class="game-icon" style="background:#ECFDF5">💰</div>
-        <div class="game-body">
-          <div class="game-title">Matemática Financeira <span class="tag">EM BREVE</span></div>
-          <div class="game-desc">Juros simples e compostos, descontos e taxas equivalentes.</div>
-        </div>
-      </div>
-    </div>
+    <div id="subjects"></div>
   </div>
 
   <script>
-    // Mostra o progresso salvo do jogo de lógica
-    try {
-      const p = JSON.parse(localStorage.getItem("logica-v1"));
-      if (p && p.xp) document.getElementById("logic-meta").textContent = `⚡ ${p.xp} XP · 🔥 ${p.streak.count} dia(s)`;
-    } catch (e) {}
+    /* ════════════════════════════════════════════
+       MATÉRIAS E JOGOS
+       Para adicionar um jogo, inclua-o na matéria certa.
+       store = chave do localStorage com o progresso (jogos estilo trilha)
+    ════════════════════════════════════════════ */
+    const SUBJECTS = [
+      {
+        name: "Raciocínio Lógico-Matemático", short: "RLM", icon: "🧮", bg: "#EFF6FF",
+        games: [
+          { title: "Matemática Mental", icon: "⚡", bg: "#EFF6FF", href: "matematica.html",
+            desc: "Adição, subtração, multiplicação, divisão, potência, raiz e porcentagem contra o relógio." },
+          { title: "Lógica Proposicional", icon: "🧠", bg: "#F5F3FF", href: "logica.html", store: "logica-v1",
+            desc: "Proposições, conectivos, negações, equivalências, tabela-verdade e deduções." },
+          { title: "Lógica de Argumentação", icon: "🗂️", bg: "#FDF2F8", soon: true },
+          { title: "Matemática Financeira", icon: "💰", bg: "#ECFDF5", soon: true },
+        ],
+      },
+      {
+        name: "Língua Portuguesa", short: "Português", icon: "📚", bg: "#ECFDF5",
+        games: [
+          { title: "Fonologia e Acentuação", icon: "✍️", bg: "#ECFDF5", href: "portugues.html", store: "portugues-fonologia-v1", isNew: true,
+            desc: "Fonemas, encontros vocálicos, divisão silábica, sílaba tônica, oxítonas/paroxítonas/proparoxítonas e acentuação." },
+          { title: "Crase", icon: "🔀", bg: "#FFFBEB", soon: true },
+          { title: "Classes de palavras", icon: "🏷️", bg: "#FEF2F2", soon: true },
+        ],
+      },
+    ];
+
+    function progressText(key) {
+      try {
+        const p = JSON.parse(localStorage.getItem(key));
+        if (p && p.xp) return `⚡ ${p.xp} XP · 🔥 ${p.streak.count} dia(s)`;
+      } catch (e) {}
+      return "";
+    }
+
+    document.getElementById("subjects").innerHTML = SUBJECTS.map(s => {
+      const live = s.games.filter(g => !g.soon).length;
+      return `
+        <div class="subject">
+          <div class="subject-head">
+            <div class="subject-icon" style="background:${s.bg}">${s.icon}</div>
+            <div>
+              <div class="subject-name">${s.name}</div>
+              <div class="subject-count">${live} jogo${live !== 1 ? "s" : ""} disponíve${live !== 1 ? "is" : "l"}</div>
+            </div>
+          </div>
+          <div class="games">${s.games.map(g => g.soon ? `
+            <div class="game soon">
+              <div class="game-icon" style="background:${g.bg}">${g.icon}</div>
+              <div class="game-body"><div class="game-title">${g.title} <span class="tag">EM BREVE</span></div></div>
+            </div>` : `
+            <a class="game" href="${g.href}">
+              <div class="game-icon" style="background:${g.bg}">${g.icon}</div>
+              <div class="game-body">
+                <div class="game-title">${g.title}${g.isNew ? ' <span class="tag">NOVO</span>' : ""}</div>
+                <div class="game-desc">${g.desc}</div>
+                <div class="game-meta">${g.store ? progressText(g.store) : ""}</div>
+              </div>
+              <div class="arrow">›</div>
+            </a>`).join("")}
+          </div>
+        </div>`;
+    }).join("");
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {

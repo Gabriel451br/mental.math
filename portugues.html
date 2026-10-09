@@ -3,30 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#8B5CF6" />
-  <title>Lógica Proposicional — Treino para Concursos</title>
+  <meta name="theme-color" content="#10B981" />
+  <title>Fonologia e Acentuação — Treino para Concursos</title>
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="Lógica" />
+  <meta name="apple-mobile-web-app-title" content="Português" />
 
   <link rel="stylesheet" href="duo.css" />
 </head>
 <body>
   <div id="app"></div>
 
-  <script src="logica-engine.js"></script>
+  <script src="portugues-engine.js"></script>
   <script src="duo.js"></script>
   <script>
     DuoGame({
-      storeKey: "logica-v1",
-      title: "Lógica Proposicional",
-      subtitle: "Raciocínio Lógico-Matemático",
-      engine: LogicEngine,
-      diffDesc: { easy: "Frases diretas", medium: "Com negações", hard: "3 variáveis" },
+      storeKey: "portugues-fonologia-v1",
+      title: "Fonologia e Acentuação",
+      subtitle: "Língua Portuguesa",
+      engine: PortuguesEngine,
+      diffDesc: { easy: "Palavras comuns", medium: "Mais regras", hard: "Pegadinhas" },
     });
   </script>
 </body>
