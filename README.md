@@ -1,12 +1,27 @@
-# 🧠 Treino Mental BB
+# 🧠 Treino para Concursos
 
-Aplicativo de treinamento de matemática mental para o concurso do **Banco do Brasil**.
+Coleção de jogos educativos para concursos (ex.: **Banco do Brasil**). A página inicial é um hub com todos os jogos:
+
+| Jogo | Arquivo | Conteúdo |
+|------|---------|----------|
+| 🧮 Matemática Mental | `matematica.html` | Operações contra o relógio |
+| 🧠 Lógica Proposicional | `logica.html` + `logica-engine.js` | Proposições, conectivos, valor lógico, negações, equivalências, tautologias e deduções |
 
 Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular direto pelo navegador, sem App Store.
 
 ---
 
-## ✨ Funcionalidades
+## 🧠 Lógica Proposicional (estilo Duolingo)
+
+- **Trilha com 7 unidades:** Proposições · Conectivos · Valor lógico · Negação · Equivalências · Tautologia · Dedução (equações lógicas)
+- **Questões geradas na hora** a partir de um banco de frases que se combinam ("Ana estuda", "o banco abre"…) — nunca repete igual
+- **Respostas conferidas por tabela-verdade:** as alternativas erradas nunca são equivalentes à correta
+- **Errou? Toque em "Ver explicação":** mostra o que você marcou, a regra, o passo a passo e um contraexemplo provando por que a sua opção está errada
+- **Vidas (❤️ 5), XP, combo e dias seguidos**, ou modo treino livre
+- **Teoria de cada unidade** (resumo com tabelas) e **"Refazer as que errei"** no fim da lição
+- Atalhos de teclado: `1-4`/`A-D` para escolher, `Enter` para verificar/continuar
+
+## ✨ Matemática Mental — Funcionalidades
 
 - **Operações:** Adição, Subtração, Multiplicação, Divisão, Potenciação, Raiz e Porcentagem
 - **Dois modos:** Geral (todas as operações) ou Múltipla escolha (selecione quais quer treinar)
@@ -41,6 +56,9 @@ Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular di
 2. **Faça upload de todos os arquivos** desta pasta:
    ```
    index.html
+   matematica.html
+   logica.html
+   logica-engine.js
    manifest.json
    sw.js
    icons/
@@ -68,7 +86,10 @@ Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular di
 
 ```
 treino-bb/
-├── index.html       ← App completo (HTML + CSS + JS)
+├── index.html       ← Hub com todos os jogos
+├── matematica.html  ← Jogo de matemática mental
+├── logica.html      ← Jogo de lógica proposicional (interface)
+├── logica-engine.js ← Gerador de questões e explicações de lógica
 ├── manifest.json    ← Configuração PWA
 ├── sw.js            ← Service Worker (cache offline)
 ├── icons/

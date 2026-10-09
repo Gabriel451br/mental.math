@@ -1,7 +1,7 @@
 {
-  "name": "Treino Mental BB",
-  "short_name": "Treino BB",
-  "description": "Treinador de matemática mental para o concurso do Banco do Brasil",
+  "name": "Treino para Concursos",
+  "short_name": "Treino",
+  "description": "Jogos de treino para concursos: matemática mental e lógica proposicional",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",

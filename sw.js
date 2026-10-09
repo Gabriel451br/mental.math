@@ -1,4 +1,4 @@
-const CACHE_NAME = "treino-bb-v2";
+const CACHE_NAME = "treino-bb-v3";
 
 // Usa self.location para funcionar tanto em raiz quanto em subpasta (GitHub Pages)
 const BASE = self.location.pathname.replace(/sw\.js$/, "");
@@ -6,6 +6,9 @@ const BASE = self.location.pathname.replace(/sw\.js$/, "");
 const ASSETS = [
   BASE,
   BASE + "index.html",
+  BASE + "matematica.html",
+  BASE + "logica.html",
+  BASE + "logica-engine.js",
   BASE + "manifest.json",
   BASE + "icons/icon-192.png",
   BASE + "icons/icon-512.png"
