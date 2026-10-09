@@ -25,14 +25,23 @@
     .app-title  { font-size: 22px; font-weight: 700; }
     .app-sub    { font-size: 13px; color: #9CA3AF; margin-top: 2px; }
 
-    .subject { margin-top: 1.4rem; }
-    .subject-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-    .subject-icon {
-      width: 36px; height: 36px; border-radius: 10px; flex: none;
-      display: flex; align-items: center; justify-content: center; font-size: 19px;
+    .subjects { display: flex; flex-direction: column; gap: 14px; }
+    .subject-card {
+      display: flex; align-items: center; gap: 16px; padding: 18px 16px; width: 100%; text-align: left;
+      border: 2px solid; border-bottom-width: 6px; border-radius: 20px; cursor: pointer;
+      font-family: inherit; color: inherit; transition: transform .08s;
     }
-    .subject-name { font-size: 15px; font-weight: 800; }
-    .subject-count { font-size: 12px; color: #9CA3AF; }
+    .subject-card:active { transform: translateY(3px); border-bottom-width: 3px; }
+    .subject-card .big-icon { font-size: 40px; width: 64px; height: 64px; border-radius: 16px; background: #fff;
+      display: flex; align-items: center; justify-content: center; flex: none; }
+    .subject-card .s-body { flex: 1; }
+    .subject-card .s-title { font-size: 18px; font-weight: 800; }
+    .subject-card .s-desc { font-size: 12px; color: #4B5563; margin-top: 4px; line-height: 1.4; }
+    .subject-card .s-meta { font-size: 11px; font-weight: 700; margin-top: 8px; }
+    .back { font-size: 13px; color: #6B7280; background: none; border: none; padding: 0; margin-bottom: 10px;
+      cursor: pointer; font-family: inherit; }
+    .view { display: none; }
+    .view.active { display: block; }
 
     .games { display: flex; flex-direction: column; gap: 10px; }
     .game {
@@ -62,11 +71,22 @@
 </head>
 <body>
   <div class="container">
-    <div class="app-header">
-      <div class="app-title">Treino para Concursos</div>
-      <div class="app-sub">Ferramentas de estudo para aprender praticando</div>
+    <div class="view" id="view-home">
+      <div class="app-header">
+        <div class="app-title">Treino para Concursos</div>
+        <div class="app-sub">Escolha uma matéria para começar</div>
+      </div>
+      <div class="subjects" id="subjects"></div>
     </div>
-    <div id="subjects"></div>
+
+    <div class="view" id="view-subject">
+      <button class="back" onclick="location.hash = ''">← Matérias</button>
+      <div class="app-header">
+        <div class="app-title" id="subject-title"></div>
+        <div class="app-sub" id="subject-sub"></div>
+      </div>
+      <div class="games" id="subject-games"></div>
+    </div>
   </div>
 
   <script>
@@ -77,10 +97,12 @@
     ════════════════════════════════════════════ */
     const SUBJECTS = [
       {
-        name: "Raciocínio Lógico-Matemático", short: "RLM", icon: "🧮", bg: "#EFF6FF",
+        id: "rlm", name: "Raciocínio Lógico-Matemático", short: "RLM", icon: "🧮",
+        bg: "#EFF6FF", border: "#BFDBFE", color: "#1D4ED8",
+        desc: "Cálculo mental, lógica proposicional e mais.",
         games: [
-          { title: "Matemática Mental", icon: "⚡", bg: "#EFF6FF", href: "matematica.html",
-            desc: "Adição, subtração, multiplicação, divisão, potência, raiz e porcentagem contra o relógio." },
+          { title: "Matemática Mental", icon: "⚡", bg: "#EFF6FF", href: "matematica.html", store: "matematica-v1", isNew: true,
+            desc: "Trilha de técnicas para calcular de cabeça (somar, subtrair, multiplicar, dividir, %, potências) e treino cronometrado." },
           { title: "Lógica Proposicional", icon: "🧠", bg: "#F5F3FF", href: "logica.html", store: "logica-v1",
             desc: "Proposições, conectivos, negações, equivalências, tabela-verdade e deduções." },
           { title: "Lógica de Argumentação", icon: "🗂️", bg: "#FDF2F8", soon: true },
@@ -88,9 +110,11 @@
         ],
       },
       {
-        name: "Língua Portuguesa", short: "Português", icon: "📚", bg: "#ECFDF5",
+        id: "portugues", name: "Língua Portuguesa", short: "Português", icon: "📚",
+        bg: "#ECFDF5", border: "#A7F3D0", color: "#047857",
+        desc: "Fonologia, divisão silábica, acentuação e mais.",
         games: [
-          { title: "Fonologia e Acentuação", icon: "✍️", bg: "#ECFDF5", href: "portugues.html", store: "portugues-fonologia-v1", isNew: true,
+          { title: "Fonologia e Acentuação", icon: "✍️", bg: "#ECFDF5", href: "portugues.html", store: "portugues-fonologia-v1",
             desc: "Fonemas, encontros vocálicos, divisão silábica, sílaba tônica, oxítonas/paroxítonas/proparoxítonas e acentuação." },
           { title: "Crase", icon: "🔀", bg: "#FFFBEB", soon: true },
           { title: "Classes de palavras", icon: "🏷️", bg: "#FEF2F2", soon: true },
@@ -98,42 +122,66 @@
       },
     ];
 
+    function loadStore(key) {
+      try { return JSON.parse(localStorage.getItem(key)) || null; } catch (e) { return null; }
+    }
     function progressText(key) {
-      try {
-        const p = JSON.parse(localStorage.getItem(key));
-        if (p && p.xp) return `⚡ ${p.xp} XP · 🔥 ${p.streak.count} dia(s)`;
-      } catch (e) {}
-      return "";
+      const p = loadStore(key);
+      return p && p.xp ? `⚡ ${p.xp} XP · 🔥 ${p.streak.count} dia(s)` : "";
+    }
+    const plural = (n, s, p) => `${n} ${n === 1 ? s : p}`;
+
+    function gameCard(g) {
+      return g.soon ? `
+        <div class="game soon">
+          <div class="game-icon" style="background:${g.bg}">${g.icon}</div>
+          <div class="game-body"><div class="game-title">${g.title} <span class="tag">EM BREVE</span></div></div>
+        </div>` : `
+        <a class="game" href="${g.href}">
+          <div class="game-icon" style="background:${g.bg}">${g.icon}</div>
+          <div class="game-body">
+            <div class="game-title">${g.title}${g.isNew ? ' <span class="tag">NOVO</span>' : ""}</div>
+            <div class="game-desc">${g.desc}</div>
+            <div class="game-meta">${g.store ? progressText(g.store) : ""}</div>
+          </div>
+          <div class="arrow">›</div>
+        </a>`;
     }
 
-    document.getElementById("subjects").innerHTML = SUBJECTS.map(s => {
+    function renderHome() {
+      document.getElementById("subjects").innerHTML = SUBJECTS.map(s => {
+        const live = s.games.filter(g => !g.soon);
+        const xp = live.reduce((t, g) => t + ((g.store && loadStore(g.store)) || { xp: 0 }).xp, 0);
+        return `
+          <button class="subject-card" style="background:${s.bg};border-color:${s.border}" onclick="location.hash='${s.id}'">
+            <span class="big-icon">${s.icon}</span>
+            <span class="s-body">
+              <span class="s-title" style="color:${s.color};display:block">${s.name}</span>
+              <span class="s-desc" style="display:block">${s.desc}</span>
+              <span class="s-meta" style="color:${s.color};display:block">${plural(live.length, "tópico", "tópicos")}${xp ? ` · ⚡ ${xp} XP` : ""}</span>
+            </span>
+            <span class="arrow">›</span>
+          </button>`;
+      }).join("");
+    }
+
+    function renderSubject(s) {
       const live = s.games.filter(g => !g.soon).length;
-      return `
-        <div class="subject">
-          <div class="subject-head">
-            <div class="subject-icon" style="background:${s.bg}">${s.icon}</div>
-            <div>
-              <div class="subject-name">${s.name}</div>
-              <div class="subject-count">${live} jogo${live !== 1 ? "s" : ""} disponíve${live !== 1 ? "is" : "l"}</div>
-            </div>
-          </div>
-          <div class="games">${s.games.map(g => g.soon ? `
-            <div class="game soon">
-              <div class="game-icon" style="background:${g.bg}">${g.icon}</div>
-              <div class="game-body"><div class="game-title">${g.title} <span class="tag">EM BREVE</span></div></div>
-            </div>` : `
-            <a class="game" href="${g.href}">
-              <div class="game-icon" style="background:${g.bg}">${g.icon}</div>
-              <div class="game-body">
-                <div class="game-title">${g.title}${g.isNew ? ' <span class="tag">NOVO</span>' : ""}</div>
-                <div class="game-desc">${g.desc}</div>
-                <div class="game-meta">${g.store ? progressText(g.store) : ""}</div>
-              </div>
-              <div class="arrow">›</div>
-            </a>`).join("")}
-          </div>
-        </div>`;
-    }).join("");
+      document.getElementById("subject-title").textContent = `${s.icon} ${s.name}`;
+      document.getElementById("subject-sub").textContent = plural(live, "tópico disponível", "tópicos disponíveis");
+      document.getElementById("subject-games").innerHTML = s.games.map(gameCard).join("");
+    }
+
+    // navegação por #hash: o botão "voltar" do celular funciona
+    function route() {
+      const s = SUBJECTS.find(x => x.id === location.hash.slice(1));
+      document.getElementById("view-home").classList.toggle("active", !s);
+      document.getElementById("view-subject").classList.toggle("active", !!s);
+      if (s) renderSubject(s); else renderHome();
+      window.scrollTo(0, 0);
+    }
+    window.addEventListener("hashchange", route);
+    route();
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
