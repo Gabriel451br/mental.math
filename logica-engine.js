@@ -312,7 +312,7 @@
     ["A Lua é feita de queijo.", "Declarativa e falsa."],
     ["Todo número primo é ímpar.", "Declarativa e falsa (2 é primo e par) — continua sendo proposição."],
     ["Existe vida em Marte.", "Declarativa: ainda não sabemos o valor, mas ela é V ou F."],
-    ["O Banco do Brasil foi fundado em 1808.", "Declarativa com valor lógico definido (verdadeira)."],
+    ["A água ferve a 100 °C ao nível do mar.", "Declarativa com valor lógico definido (verdadeira)."],
     ["O Sol é uma estrela.", "Declarativa e verdadeira."],
     ["Machado de Assis escreveu Dom Casmurro.", "Declarativa e verdadeira."],
     ["Um triângulo tem quatro lados.", "Declarativa e falsa."],

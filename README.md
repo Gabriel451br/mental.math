@@ -1,15 +1,27 @@
 # 🧠 Treino para Concursos
 
-Coleção de jogos educativos para concursos (ex.: **Banco do Brasil**). A página inicial é um hub com todos os jogos:
+Ferramentas de estudo para concursos em geral, em formato de jogo. A página inicial organiza os jogos por **matéria**:
 
-| Jogo | Arquivo | Conteúdo |
-|------|---------|----------|
-| 🧮 Matemática Mental | `matematica.html` | Operações contra o relógio |
-| 🧠 Lógica Proposicional | `logica.html` + `logica-engine.js` | Proposições, conectivos, valor lógico, negações, equivalências, tautologias e deduções |
+| Matéria | Jogo | Arquivo |
+|---------|------|---------|
+| Raciocínio Lógico-Matemático (RLM) | 🧮 Matemática Mental | `matematica.html` |
+| Raciocínio Lógico-Matemático (RLM) | 🧠 Lógica Proposicional | `logica.html` + `logica-engine.js` |
+| Língua Portuguesa | ✍️ Fonologia e Acentuação | `portugues.html` + `portugues-engine.js` |
+
+Os jogos estilo Duolingo compartilham o mesmo motor (`duo.js` + `duo.css`), com duas abas:
+- **🗺️ Trilha:** unidades em sequência; cada lição tem 10 questões, 5 vidas, e a dificuldade sobe sozinha conforme você ganha estrelas.
+- **🎯 Treino:** você escolhe os conteúdos, a dificuldade, o número de questões e se joga com ou sem vidas.
 
 Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular direto pelo navegador, sem App Store.
 
 ---
+
+## ✍️ Fonologia e Acentuação (Português)
+
+- **7 unidades:** Fonemas e letras · Encontros vocálicos · Divisão silábica · Sílaba tônica · Oxítona/paroxítona/proparoxítona · Acentuação · Novo Acordo
+- **Dinâmicas de exercício:** múltipla escolha, **separar sílabas** tocando entre as letras, **tocar na sílaba tônica**, **tocar na letra que leva acento** e **ligar pares**
+- Banco com ~185 palavras; as regras de acentuação são calculadas por código e conferidas contra a grafia de cada palavra
+- Explicação ao errar: passo a passo (separar → achar a tônica → olhar a terminação → regra)
 
 ## 🧠 Lógica Proposicional (estilo Duolingo)
 
@@ -51,7 +63,7 @@ Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular di
 
 ### Passo a passo
 
-1. **Crie um repositório** no GitHub (ex: `treino-bb`)
+1. **Crie um repositório** no GitHub (ex: `treino-concursos`)
 
 2. **Faça upload de todos os arquivos** desta pasta:
    ```
@@ -59,6 +71,10 @@ Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular di
    matematica.html
    logica.html
    logica-engine.js
+   portugues.html
+   portugues-engine.js
+   duo.js
+   duo.css
    manifest.json
    sw.js
    icons/
@@ -75,7 +91,7 @@ Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular di
 
 4. Após 1-2 minutos, seu app estará em:
    ```
-   https://SEU_USUARIO.github.io/treino-bb/
+   https://SEU_USUARIO.github.io/treino-concursos/
    ```
 
 > ⚠️ O Service Worker só funciona em **HTTPS** — o GitHub Pages já serve em HTTPS automaticamente.
@@ -85,11 +101,14 @@ Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular di
 ## 🗂️ Estrutura do projeto
 
 ```
-treino-bb/
+treino-concursos/
 ├── index.html       ← Hub com todos os jogos
 ├── matematica.html  ← Jogo de matemática mental
 ├── logica.html      ← Jogo de lógica proposicional (interface)
 ├── logica-engine.js ← Gerador de questões e explicações de lógica
+├── portugues.html   ← Jogo de fonologia e acentuação (interface)
+├── portugues-engine.js ← Banco de palavras, regras e questões de português
+├── duo.js / duo.css ← Motor compartilhado: trilha, treino, vidas, XP e dinâmicas
 ├── manifest.json    ← Configuração PWA
 ├── sw.js            ← Service Worker (cache offline)
 ├── icons/

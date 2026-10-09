@@ -1,7 +1,7 @@
 {
   "name": "Treino para Concursos",
   "short_name": "Treino",
-  "description": "Jogos de treino para concursos: matemática mental e lógica proposicional",
+  "description": "Jogos de estudo para concursos: raciocínio lógico-matemático, português e mais",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
