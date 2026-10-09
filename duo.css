@@ -333,3 +333,24 @@
     .m-item.done { border-color: #BBF7D0; background: #F0FDF4; color: #15803D; opacity: .55; cursor: default; }
     .m-item.bad { border-color: #FCA5A5; background: #FEF2F2; color: #B91C1C; }
     .hl-letters { color: #8B5CF6; text-decoration: underline; text-underline-offset: 4px; }
+
+    /* ── Dinâmica: resposta digitada ───────────────── */
+    .answer-row { margin-bottom: 7.5rem; }
+    .answer-input {
+      width: 100%; font-size: 26px; font-weight: 700; padding: 14px 16px; border-radius: 14px;
+      border: 2px solid #E5E7EB; border-bottom-width: 4px; background: #fff; color: #1A1D23;
+      text-align: center; outline: none; font-family: inherit; -webkit-appearance: none;
+    }
+    .answer-input:focus { border-color: #93C5FD; }
+    .answer-input.correct { border-color: #86EFAC; background: #F0FDF4; color: #15803D; }
+    .answer-input.wrong   { border-color: #FCA5A5; background: #FEF2F2; color: #B91C1C; }
+
+    /* ── Atalho para outro modo de treino ──────────── */
+    .train-link {
+      display: flex; align-items: center; gap: 12px; padding: 14px; text-decoration: none; color: inherit;
+      background: #fff; border: 2px solid #E8EAF0; border-bottom-width: 5px; border-radius: 16px;
+    }
+    .train-link-icon { font-size: 28px; }
+    .train-link-body { flex: 1; display: flex; flex-direction: column; gap: 2px; font-size: 15px; }
+    .train-link-body span { font-size: 12px; color: #6B7280; }
+    .train-link .arrow { font-size: 20px; color: #D1D5DB; }

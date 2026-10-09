@@ -1,10 +1,11 @@
 # 🧠 Treino para Concursos
 
-Ferramentas de estudo para concursos em geral, em formato de jogo. A página inicial organiza os jogos por **matéria**:
+Ferramentas de estudo para concursos em geral, em formato de jogo. A página inicial mostra as **matérias** (toque numa para ver os tópicos — os endereços `#rlm` e `#portugues` abrem direto):
 
 | Matéria | Jogo | Arquivo |
 |---------|------|---------|
-| Raciocínio Lógico-Matemático (RLM) | 🧮 Matemática Mental | `matematica.html` |
+| Raciocínio Lógico-Matemático (RLM) | ⚡ Matemática Mental (trilha de técnicas) | `matematica.html` + `matematica-engine.js` |
+| Raciocínio Lógico-Matemático (RLM) | ⏱️ Cálculo cronometrado (dentro da Matemática Mental) | `matematica-rapida.html` |
 | Raciocínio Lógico-Matemático (RLM) | 🧠 Lógica Proposicional | `logica.html` + `logica-engine.js` |
 | Língua Portuguesa | ✍️ Fonologia e Acentuação | `portugues.html` + `portugues-engine.js` |
 
@@ -15,6 +16,14 @@ Os jogos estilo Duolingo compartilham o mesmo motor (`duo.js` + `duo.css`), com 
 Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular direto pelo navegador, sem App Store.
 
 ---
+
+## ⚡ Matemática Mental (trilha de técnicas)
+
+- **7 unidades:** Adição · Subtração · Multiplicação · Divisão · Porcentagem · Potências e raízes · Divisibilidade
+- Ensina atalhos: somar por partes, arredondar e compensar, completar (troco), × 5 / × 9 / × 11, dobro e metade, ÷ 5 / ÷ 25, montar porcentagens com 10%/5%/1%, quadrados terminados em 5, raiz exata pelo último algarismo
+- **Resposta digitada** (e perguntas de "qual o próximo passo?"); no Fácil aparece uma dica da técnica
+- Ao errar: o passo a passo da técnica com os números da questão
+- Na aba **Treino** fica o **Cálculo cronometrado** clássico
 
 ## ✍️ Fonologia e Acentuação (Português)
 
@@ -33,9 +42,10 @@ Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular di
 - **Teoria de cada unidade** (resumo com tabelas) e **"Refazer as que errei"** no fim da lição
 - Atalhos de teclado: `1-4`/`A-D` para escolher, `Enter` para verificar/continuar
 
-## ✨ Matemática Mental — Funcionalidades
+## ⏱️ Cálculo cronometrado — Funcionalidades
 
 - **Operações:** Adição, Subtração, Multiplicação, Divisão, Potenciação, Raiz e Porcentagem
+- Acesse pela aba **Treino** da Matemática Mental
 - **Dois modos:** Geral (todas as operações) ou Múltipla escolha (selecione quais quer treinar)
 - **3 níveis de dificuldade:** Fácil, Médio e Difícil
 - **Cronômetro:** total e por questão
@@ -69,6 +79,8 @@ Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular di
    ```
    index.html
    matematica.html
+   matematica-engine.js
+   matematica-rapida.html
    logica.html
    logica-engine.js
    portugues.html
@@ -103,7 +115,9 @@ Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular di
 ```
 treino-concursos/
 ├── index.html       ← Hub com todos os jogos
-├── matematica.html  ← Jogo de matemática mental
+├── matematica.html  ← Matemática mental: trilha de técnicas
+├── matematica-engine.js ← Técnicas, questões e explicações de cálculo mental
+├── matematica-rapida.html ← Cálculo cronometrado (treino clássico)
 ├── logica.html      ← Jogo de lógica proposicional (interface)
 ├── logica-engine.js ← Gerador de questões e explicações de lógica
 ├── portugues.html   ← Jogo de fonologia e acentuação (interface)

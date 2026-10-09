@@ -10,6 +10,8 @@
        e a última opção aparece como botão separado (ex.: "Sem acento").
    - "split": separar sílabas tocando entre as letras. q.letters, q.check(gaps)
    - "match": ligar pares. q.pairs = [[esquerda, direita], ...]
+   - "input": resposta numérica digitada. q.answer = número
+   Config opcional: backHref/backLabel (link de volta), trainLink (atalho no Treino)
    Opcionais: q.answerText, q.describe(valor), q.explain(valor), q.context
 ════════════════════════════════════════════════════════════ */
 (function () {
@@ -86,9 +88,18 @@
       window.scrollTo(0, 0);
     }
     const qType = q => q.type || "choice";
-    const isCorrect = (q, v) => (q.check ? q.check(v) : v === q.answer);
-    const answerText = q => q.answerText || q.options[q.answer];
-    const describe = (q, v) => (q.describe ? q.describe(v) : q.options[v]);
+    const fmtNum = n => (Number.isInteger(n) ? String(n) : String(+n.toFixed(4)).replace(".", ","));
+    // aceita "12,5", "1.250" (milhar) e "12.5"
+    function parseNum(s) {
+      s = String(s).trim().replace(/\s/g, "");
+      if (!s) return NaN;
+      if (s.includes(",")) s = s.replace(/\./g, "").replace(",", ".");
+      else if (/^-?\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, "");
+      return /^-?\d*\.?\d+$/.test(s) ? parseFloat(s) : NaN;
+    }
+    const isCorrect = (q, v) => (q.check ? q.check(v) : qType(q) === "input" ? Math.abs(v - q.answer) < 1e-6 : v === q.answer);
+    const answerText = q => q.answerText || (qType(q) === "input" ? fmtNum(q.answer) : q.options[q.answer]);
+    const describe = (q, v) => (q.describe ? q.describe(v) : qType(q) === "input" ? fmtNum(v) : q.options[v]);
 
     /* ════════════════════════════════════════════
        ESQUELETO HTML
@@ -96,7 +107,7 @@
     $("app").innerHTML = `
 <div id="screen-home" class="screen active">
   <div class="container">
-    <a class="back-link" href="./">← Todas as matérias</a>
+    <a class="back-link" href="${cfg.backHref || "./"}">${cfg.backLabel || "← Todas as matérias"}</a>
     <div class="app-header">
       <div class="app-title">${cfg.title}</div>
       <div class="app-sub">${cfg.subtitle}</div>
@@ -119,6 +130,13 @@
     </div>
 
     <div class="tab-panel" id="panel-train">
+      ${cfg.trainLink ? `
+      <a class="train-link" href="${cfg.trainLink.href}">
+        <span class="train-link-icon">${cfg.trainLink.icon}</span>
+        <span class="train-link-body"><b>${cfg.trainLink.title}</b><span>${cfg.trainLink.desc}</span></span>
+        <span class="arrow">›</span>
+      </a>
+      <div class="sec-label" style="margin-top:1.2rem">Ou pratique as técnicas</div>` : ""}
       <div class="section">
         <div class="sec-label">Conteúdos</div>
         <div class="topics-grid" id="topics-grid"></div>
@@ -353,6 +371,17 @@
     }
 
     const RENDER = {
+      input(q, box) {
+        box.innerHTML = `<div class="answer-row"><input class="answer-input" id="ans-input" type="text"
+          inputmode="decimal" autocomplete="off" placeholder="sua resposta" /></div>`;
+        const el = $("ans-input");
+        el.addEventListener("input", () => {
+          const v = parseNum(el.value);
+          state.value = isNaN(v) ? null : v;
+          $("btn-main").disabled = state.value == null;
+        });
+        setTimeout(() => el.focus(), 80);
+      },
       choice(q, box) {
         const layout = q.layout || "list";
         if (layout === "list") {
@@ -440,6 +469,10 @@
           if (i === q.answer) el.classList.add("right");
           else if (i === state.value) el.classList.add("wrong");
         });
+      } else if (t === "input") {
+        const el = $("ans-input");
+        el.disabled = true;
+        el.classList.add(isCorrect(q, state.value) ? "correct" : "wrong");
       } else if (t === "split") {
         const right = new Set(q.gaps);
         document.querySelectorAll(".gap").forEach(el => {
