@@ -1,6 +1,6 @@
 # 🧠 Treino para Concursos
 
-Ferramentas de estudo para concursos em geral, em formato de jogo. A página inicial mostra as **matérias** (toque numa para ver os tópicos — os endereços `#rlm`, `#portugues` e `#constitucional` abrem direto):
+Ferramentas de estudo para concursos em geral, em formato de jogo. A página inicial mostra as **matérias** (toque numa para ver os tópicos — os endereços `#rlm`, `#portugues`, `#constitucional` e `#administrativo` abrem direto):
 
 | Matéria | Jogo | Arquivo |
 |---------|------|---------|
@@ -9,6 +9,7 @@ Ferramentas de estudo para concursos em geral, em formato de jogo. A página ini
 | Raciocínio Lógico-Matemático (RLM) | 🧠 Lógica Proposicional | `logica.html` + `logica-engine.js` |
 | Língua Portuguesa | ✍️ Fonologia e Acentuação | `portugues.html` + `portugues-engine.js` |
 | Direito Constitucional | 📜 Constituição Federal (trilha, treino e lei seca) | `constitucional.html` + `constitucional-engine.js` |
+| Direito Administrativo | 📑 Direito Administrativo (trilha, treino e lei seca) | `administrativo.html` + `administrativo-engine.js` |
 
 Os jogos estilo Duolingo compartilham o mesmo motor (`duo.js` + `duo.css`), com duas abas:
 - **🗺️ Trilha:** unidades em sequência; cada lição tem 10 questões, 5 vidas, e a dificuldade sobe sozinha conforme você ganha estrelas.
@@ -34,6 +35,12 @@ Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular di
   - **Flashcards:** pergunta → toque para ver o texto da lei → "Lembrei / Não lembrei" (os esquecidos voltam para o fim)
   - **Exercícios:** complete a lacuna, certo/errado com o texto alterado e ligar assunto ao dispositivo
 - Para incluir artigos, adicione itens em `LAW_BLOCKS` marcando os termos-chave como `[[correto|errado1|errado2]]`
+
+## 📑 Direito Administrativo
+
+- **Trilha com 9 unidades, em ordem lógica:** Princípios · Organização administrativa · Poderes administrativos · Atos administrativos · Agentes públicos (Lei 8.112/90) · Licitações (Lei 14.133/21) · Responsabilidade do Estado · Improbidade (Lei 8.429/92, após a Lei 14.230/21) · Processo administrativo (Lei 9.784/99)
+- **Lei seca** em 9 blocos: CF (art. 37), Lei 9.784/99, DL 200/67, CTN (art. 78), Súmulas 346 e 473 do STF, Lei 8.112/90, Lei 14.133/21, Código Civil (art. 43) e Lei 8.429/92 — com flashcards e exercícios
+- Os jogos de Direito usam o mesmo núcleo (`juridico-core.js`): cada matéria só fornece os dados (questões, lei seca, tópicos e teoria)
 
 ## ✍️ Fonologia e Acentuação (Português)
 
@@ -95,8 +102,11 @@ Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular di
    logica-engine.js
    portugues.html
    portugues-engine.js
+   juridico-core.js
    constitucional.html
    constitucional-engine.js
+   administrativo.html
+   administrativo-engine.js
    duo.js
    duo.css
    manifest.json
@@ -134,8 +144,11 @@ treino-concursos/
 ├── logica-engine.js ← Gerador de questões e explicações de lógica
 ├── portugues.html   ← Jogo de fonologia e acentuação (interface)
 ├── portugues-engine.js ← Banco de palavras, regras e questões de português
+├── juridico-core.js ← Núcleo comum dos jogos de Direito (questões, lei seca, flashcards)
 ├── constitucional.html ← Direito Constitucional: trilha, treino e lei seca
-├── constitucional-engine.js ← Questões, lei seca (texto da CF/88) e flashcards
+├── constitucional-engine.js ← Dados: questões e lei seca da CF/88
+├── administrativo.html ← Direito Administrativo: trilha, treino e lei seca
+├── administrativo-engine.js ← Dados: questões e lei seca de Direito Administrativo
 ├── duo.js / duo.css ← Motor compartilhado: trilha, treino, lei seca, vidas, XP e dinâmicas
 ├── manifest.json    ← Configuração PWA
 ├── sw.js            ← Service Worker (cache offline)
