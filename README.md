@@ -8,6 +8,7 @@ Ferramentas de estudo para concursos em geral, em formato de jogo. A página ini
 | Raciocínio Lógico-Matemático (RLM) | ⏱️ Cálculo cronometrado (dentro da Matemática Mental) | `matematica-rapida.html` |
 | Raciocínio Lógico-Matemático (RLM) | 🧠 Lógica Proposicional | `logica.html` + `logica-engine.js` |
 | Língua Portuguesa | ✍️ Fonologia e Acentuação | `portugues.html` + `portugues-engine.js` |
+| Língua Portuguesa | 📝 Ortografia e Emprego das Palavras | `ortografia.html` + `ortografia-engine.js` |
 | Direito Constitucional | 📜 Constituição Federal (trilha, treino e lei seca) | `constitucional.html` + `constitucional-engine.js` |
 | Direito Administrativo | 📑 Administração Pública (trilha, treino e lei seca) | `administrativo.html` + `administrativo-engine.js` |
 
@@ -43,6 +44,12 @@ Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular di
 - **Trilha com 9 unidades, em ordem lógica:** Princípios · Organização administrativa · Poderes administrativos · Atos administrativos · Agentes públicos (Lei 8.112/90) · Licitações (Lei 14.133/21) · Responsabilidade do Estado · Improbidade (Lei 8.429/92, após a Lei 14.230/21) · Processo administrativo (Lei 9.784/99)
 - **Lei seca** em 9 blocos: CF (art. 37), Lei 9.784/99, DL 200/67, CTN (art. 78), Súmulas 346 e 473 do STF, Lei 8.112/90, Lei 14.133/21, Código Civil (art. 43) e Lei 8.429/92 — com flashcards e exercícios
 - Os jogos de Direito usam o mesmo núcleo (`juridico-core.js`): cada matéria só fornece os dados (questões, lei seca, tópicos e teoria)
+
+## 📝 Ortografia e Emprego das Palavras (Português)
+
+- **7 unidades:** Os porquês · Há × a (acerca de / a cerca de / há cerca de) · Onde × aonde × donde · Expressões que confundem (mal/mau, mas/mais, senão/se não, a fim/afim, demais/de mais, tampouco, em vez de) · Parônimos · Grafia (S/SS/Ç/SC/XC, X/CH, S/Z, G/J) · Hífen (Novo Acordo)
+- Dinâmicas: completar a frase, certo/errado, completar as letras da palavra, escolher a grafia correta e ligar parônimos ao significado
+- Cada forma tem a sua regra: ao errar, a explicação mostra a regra da forma certa **e** quando a forma marcada seria usada
 
 ## ✍️ Fonologia e Acentuação (Português)
 
@@ -104,6 +111,8 @@ Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular di
    logica-engine.js
    portugues.html
    portugues-engine.js
+   ortografia.html
+   ortografia-engine.js
    juridico-core.js
    constitucional.html
    constitucional-engine.js
@@ -146,6 +155,8 @@ treino-concursos/
 ├── logica-engine.js ← Gerador de questões e explicações de lógica
 ├── portugues.html   ← Jogo de fonologia e acentuação (interface)
 ├── portugues-engine.js ← Banco de palavras, regras e questões de português
+├── ortografia.html  ← Ortografia e emprego das palavras (interface)
+├── ortografia-engine.js ← Frases, grafias, hífen e regras de cada forma
 ├── juridico-core.js ← Núcleo comum dos jogos de Direito (questões, lei seca, flashcards)
 ├── constitucional.html ← Direito Constitucional: trilha, treino e lei seca
 ├── constitucional-engine.js ← Dados: questões e lei seca da CF/88
