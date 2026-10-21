@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#3B82F6" />
+  <title>Exercícios — Treino para Concursos</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Treino" />
+
+  <link rel="stylesheet" href="duo.css" />
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- motores de todas as matérias -->
+  <script src="matematica-engine.js"></script>
+  <script src="logica-engine.js"></script>
+  <script src="portugues-engine.js"></script>
+  <script src="ortografia-engine.js"></script>
+  <script src="juridico-core.js"></script>
+  <script src="constitucional-engine.js"></script>
+  <script src="administrativo-engine.js"></script>
+  <script src="exercicios-engine.js"></script>
+  <script src="duo.js"></script>
+  <script>
+    const bySubject = s => t => t.subject === s && !t.law;
+    DuoGame({
+      storeKey: "exercicios-v1",
+      title: "Exercícios mistos",
+      subtitle: "Monte uma sessão com conteúdos de várias matérias",
+      topNav: `<div class="app-tabs"><a class="app-tab" href="./">📚 Matérias</a><a class="app-tab active" href="exercicios.html">🧩 Exercícios</a></div>`,
+      trainOnly: true,
+      engine: ExerciciosEngine,
+      diffDesc: { easy: "O essencial", medium: "Intermediário", hard: "Pegadinhas" },
+      defaultMix: t => !t.law,
+      presets: [
+        { label: "🌐 Tudo", test: t => !t.law },
+        { label: "🧮 RLM", test: bySubject("rlm") },
+        { label: "📚 Português", test: bySubject("pt") },
+        { label: "⚖️ Constitucional", test: bySubject("con") },
+        { label: "🏛️ Administrativo", test: bySubject("adm") },
+        { label: "⚖️+🏛️ Direito", test: t => (t.subject === "con" || t.subject === "adm") && !t.law },
+        { label: "📜 Só lei seca", test: t => !!t.law },
+      ],
+    });
+  </script>
+</body>
+</html>
