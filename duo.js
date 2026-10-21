@@ -11,7 +11,10 @@
    - "split": separar sílabas tocando entre as letras. q.letters, q.check(gaps)
    - "match": ligar pares. q.pairs = [[esquerda, direita], ...]
    - "input": resposta numérica digitada. q.answer = número
-   Config opcional: backHref/backLabel (link de volta), trainLink (atalho no Treino)
+   Config opcional: backHref/backLabel (link de volta), trainLink (atalho no Treino),
+     topNav (HTML no topo, no lugar do link de volta), trainOnly (só a aba Treino),
+     presets ([{ label, test(topico) }] atalhos de seleção), defaultMix(topico) (seleção inicial).
+     Tópicos com o campo "group" aparecem agrupados no Treino; "chip" é o nome curto no botão.
 
    Lei seca (opcional): engine.LAW = { blocks: [{ id, label, ref }], generate(blockId, diff), cards(blockId) }
    Cria a aba "📜 Lei seca" com flashcards e exercícios por bloco de artigos.
@@ -53,7 +56,7 @@
 
     const state = {
       tab: "path", diff: "easy", numQ: 10, hearts: true,
-      mixTopics: TOPICS.map(t => t.id),
+      mixTopics: TOPICS.filter(t => !cfg.defaultMix || cfg.defaultMix(t)).map(t => t.id),
       last: null,
       questions: [], current: 0, answers: [], value: null, checked: false,
       lives: MAX_HEARTS, combo: 0, xp: 0, failed: false,
@@ -69,6 +72,12 @@
       return { xp: 0, topics: {}, streak: { last: null, count: 0 } };
     }
     const progress = loadProgress();
+    // seleção do treino salva (só mantém ids que ainda existem)
+    if (Array.isArray(progress.mix)) {
+      const ok = progress.mix.filter(id => TOPICS.some(t => t.id === id));
+      if (ok.length) state.mixTopics = ok;
+    }
+    if (cfg.trainOnly) state.tab = "train";
     function saveProgress() {
       try { localStorage.setItem(cfg.storeKey, JSON.stringify(progress)); } catch (e) {}
     }
@@ -130,7 +139,7 @@
     $("app").innerHTML = `
 <div id="screen-home" class="screen active">
   <div class="container">
-    <a class="back-link" href="${cfg.backHref || "./"}">${cfg.backLabel || "← Todas as matérias"}</a>
+    ${cfg.topNav || `<a class="back-link" href="${cfg.backHref || "./"}">${cfg.backLabel || "← Todas as matérias"}</a>`}
     <div class="app-header">
       <div class="app-title">${cfg.title}</div>
       <div class="app-sub">${cfg.subtitle}</div>
@@ -141,7 +150,7 @@
       <div class="stat"><div class="stat-val" id="st-acc">—</div><div class="stat-lbl">🎯 precisão</div></div>
     </div>
 
-    <div class="tabs">
+    <div class="tabs"${cfg.trainOnly ? ' style="display:none"' : ""}>
       <button class="tab" id="tab-path" onclick="G.setTab('path')">🗺️ Trilha</button>
       <button class="tab" id="tab-train" onclick="G.setTab('train')">🎯 Treino</button>
       ${LAW ? `<button class="tab" id="tab-law" onclick="G.setTab('law')">📜 Lei seca</button>` : ""}
@@ -163,6 +172,7 @@
       <div class="sec-label" style="margin-top:1.2rem">Ou pratique as técnicas</div>` : ""}
       <div class="section">
         <div class="sec-label">Conteúdos</div>
+        ${cfg.presets ? `<div class="presets">${cfg.presets.map((p, i) => `<button class="preset" onclick="G.preset(${i})">${p.label}</button>`).join("")}</div>` : ""}
         <div class="topics-grid" id="topics-grid"></div>
         <div class="ops-hint" id="topics-hint"></div>
       </div>
@@ -309,12 +319,24 @@
         </button>`).join("");
       $("numq-row").innerHTML = NUMQS.map(n =>
         `<button class="numq-btn${state.numQ === n ? " active" : ""}" onclick="G.setNumQ(${n})">${n}</button>`).join("");
-      $("topics-grid").innerHTML = TOPICS.map(t => {
+      const chip = t => {
         const on = state.mixTopics.includes(t.id);
         return `<button class="topic-chip${on ? " active" : ""}" onclick="G.toggleTopic('${t.id}')"
           style="${on ? `color:${t.color};background:${t.bg};border-color:${t.border}` : ""}">
-          <span class="ic">${t.icon}</span>${t.label}</button>`;
-      }).join("");
+          <span class="ic">${t.icon}</span>${t.chip || t.label}</button>`;
+      };
+      const groups = [...new Set(TOPICS.map(t => t.group).filter(Boolean))];
+      if (groups.length) {
+        $("topics-grid").className = "topic-groups";
+        $("topics-grid").innerHTML = groups.map((g, gi) => {
+          const ts = TOPICS.filter(t => t.group === g);
+          const sel = ts.filter(t => state.mixTopics.includes(t.id)).length;
+          return `<div class="tgroup">
+            <div class="tgroup-head"><span>${g}</span>
+              <button class="tgroup-btn" onclick="G.toggleGroup(${gi})">${sel === ts.length ? "Desmarcar" : "Marcar todos"}</button></div>
+            <div class="topics-grid">${ts.map(chip).join("")}</div></div>`;
+        }).join("");
+      } else $("topics-grid").innerHTML = TOPICS.map(chip).join("");
       const n = state.mixTopics.length;
       $("topics-hint").textContent = `${n} conteúdo${n !== 1 ? "s" : ""} selecionado${n !== 1 ? "s" : ""}`;
       if (LAW) {
@@ -381,8 +403,8 @@
     }
     // Evita repetir questões na mesma sessão e, quando possível, as vistas recentemente
     function buildQuestions(topics, n, diff) {
-      const list = [];
-      for (let i = 0; i < n; i++) list.push(topics[i % topics.length]);
+      const list = [], pool = shuffle(topics); // com mais conteúdos que questões, sorteia quais entram
+      for (let i = 0; i < n; i++) list.push(pool[i % pool.length]);
       progress.recent = progress.recent || {};
       const used = new Set(), out = [];
       for (const t of shuffle(list)) {
@@ -841,6 +863,7 @@
     }
 
     function home() { buildHome(); showScreen("home"); }
+    function saveMix() { progress.mix = state.mixTopics.slice(); saveProgress(); buildHome(); }
 
     /* ── API usada pelos onclick ─────────────────── */
     window.G = {
@@ -852,7 +875,22 @@
         const i = state.mixTopics.indexOf(id);
         if (i >= 0) { if (state.mixTopics.length > 1) state.mixTopics.splice(i, 1); }
         else state.mixTopics.push(id);
-        buildHome();
+        saveMix();
+      },
+      toggleGroup: gi => {
+        const g = [...new Set(TOPICS.map(t => t.group).filter(Boolean))][gi];
+        const ids = TOPICS.filter(t => t.group === g).map(t => t.id);
+        const all = ids.every(id => state.mixTopics.includes(id));
+        if (all) {
+          const rest = state.mixTopics.filter(id => !ids.includes(id));
+          if (rest.length) state.mixTopics = rest; // mantém ao menos um conteúdo
+        } else state.mixTopics = [...new Set(state.mixTopics.concat(ids))];
+        saveMix();
+      },
+      preset: i => {
+        const ids = TOPICS.filter(cfg.presets[i].test).map(t => t.id);
+        if (ids.length) state.mixTopics = ids;
+        saveMix();
       },
       openTopic, openTheory, closeModal, startLesson, startTraining, retry, redoWrong,
       startLawQuiz, startCards, flip, rate,

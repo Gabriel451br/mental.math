@@ -12,6 +12,8 @@ Ferramentas de estudo para concursos em geral, em formato de jogo. A página ini
 | Direito Constitucional | 📜 Constituição Federal (trilha, treino e lei seca) | `constitucional.html` + `constitucional-engine.js` |
 | Direito Administrativo | 📑 Administração Pública (trilha, treino e lei seca) | `administrativo.html` + `administrativo-engine.js` |
 
+No topo do app há duas abas: **📚 Matérias** (os jogos de cada matéria) e **🧩 Exercícios** (`exercicios.html`), onde você monta uma sessão misturando conteúdos de várias matérias — inclusive os blocos de lei seca —, com atalhos (Tudo, RLM, Português, Constitucional, Administrativo, Direito, Só lei seca), seleção por grupo, dificuldade, nº de questões e modo com/sem vidas. As questões vêm intercaladas e o resultado mostra o desempenho por conteúdo.
+
 Os jogos estilo Duolingo compartilham o mesmo motor (`duo.js` + `duo.css`), com duas abas:
 - **🗺️ Trilha:** unidades em sequência; cada lição tem 10 questões, 5 vidas, e a dificuldade sobe sozinha conforme você ganha estrelas.
 - **🎯 Treino:** você escolhe os conteúdos, a dificuldade, o número de questões e se joga com ou sem vidas.
@@ -104,6 +106,8 @@ Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular di
 2. **Faça upload de todos os arquivos** desta pasta:
    ```
    index.html
+   exercicios.html
+   exercicios-engine.js
    matematica.html
    matematica-engine.js
    matematica-rapida.html
@@ -147,7 +151,9 @@ Funciona como **PWA (Progressive Web App)** — pode ser instalado no celular di
 
 ```
 treino-concursos/
-├── index.html       ← Hub com todos os jogos
+├── index.html       ← Hub com as matérias (aba 📚 Matérias)
+├── exercicios.html  ← Aba 🧩 Exercícios: sessões misturando matérias
+├── exercicios-engine.js ← Junta os conteúdos de todos os motores
 ├── matematica.html  ← Matemática mental: trilha de técnicas
 ├── matematica-engine.js ← Técnicas, questões e explicações de cálculo mental
 ├── matematica-rapida.html ← Cálculo cronometrado (treino clássico)
